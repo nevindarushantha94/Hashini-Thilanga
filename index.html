@@ -416,6 +416,7 @@
     content:""; position:absolute; inset: clamp(6px,1.6vw,9px); border:1px solid rgba(165,121,59,0.28); pointer-events:none;
   }
   .person-block.in-view .portrait-frame{ opacity:1; transform: scale(1); filter: blur(0); }
+  .before-idoc.in-view .portrait-frame{ opacity:1; transform: scale(1); filter: blur(0); }
 
   .portrait-img{ display:block; width:100%; height:100%; object-fit:cover; object-position: center 18%; }
 
@@ -507,6 +508,223 @@
       transition-duration:0.6s !important;
     }
     .families-mid-divider .glow{ animation:none !important; }
+  }
+
+  /* ============================================================
+     SHARED — eyebrow label + living gold divider, reused by the
+     Before-I-Do and Wedding-Details sections below.
+     ============================================================ */
+
+  .section-eyebrow{
+    display:block;
+    font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.68rem,1.6vw,0.82rem);
+    letter-spacing:0.4em; padding-left:0.4em; color: var(--gold);
+  }
+
+  .section-heading{
+    margin: clamp(0.4rem,1.6vw,0.6rem) 0 0;
+    font-family:'Playfair Display', serif; font-style:italic; font-weight:600;
+    font-size: clamp(2.1rem,8vw,3.3rem); line-height:1.14; color: var(--ink);
+  }
+
+  .gold-divider{
+    display:flex; align-items:center; justify-content:center; gap: 0.7rem;
+    width: min(64vw, 220px); margin: clamp(1.2rem,4vh,1.8rem) auto;
+    opacity:0; transition: opacity 1.2s ease;
+    position:relative; z-index:1;
+  }
+  .gold-divider.in-view{ opacity:0.85; }
+  .gold-divider .line{ flex:1; height:1px; background: linear-gradient(90deg, transparent, var(--gold-line)); }
+  .gold-divider .line.right{ background: linear-gradient(90deg, var(--gold-line), transparent); }
+  .gold-divider .gold-point{ position:relative; width:14px; height:14px; flex:none; display:flex; align-items:center; justify-content:center; }
+  .gold-divider svg{ width:11px; height:11px; flex:none; position:relative; z-index:1; }
+  .gold-divider .spark{ fill: var(--gold); }
+  .gold-divider .glow{
+    position:absolute; left:50%; top:50%; width:16px; height:16px;
+    transform: translate(-50%,-50%);
+    border-radius:50%;
+    background: radial-gradient(circle, rgba(240,217,160,0.85) 0%, rgba(240,217,160,0.25) 55%, rgba(240,217,160,0) 78%);
+    filter: blur(2.5px);
+    animation: goldBreatheSlow 3.4s ease-in-out infinite;
+  }
+  @keyframes goldBreatheSlow{
+    0%   { transform: translate(-50%,-50%) translateY(0); opacity:0.55; }
+    50%  { transform: translate(-50%,-50%) translateY(-4px); opacity:0.95; }
+    100% { transform: translate(-50%,-50%) translateY(0); opacity:0.55; }
+  }
+
+  /* ============================================================
+     BEFORE WE SAY "I DO"
+     ============================================================ */
+
+  .before-idoc{
+    position:relative; z-index:1;
+    padding: clamp(3.4rem,10vh,5.5rem) 8vw;
+    text-align:center;
+    display:flex; flex-direction:column; align-items:center;
+  }
+
+  .before-idoc .section-heading{ letter-spacing:0.01em; }
+
+  .before-copy > *{
+    opacity:0; transform: translateY(14px);
+    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
+  }
+  .before-idoc.in-view .before-copy > *{ opacity:1; transform:none; }
+
+  .before-quote{
+    margin: clamp(1.4rem,4vh,2rem) auto 0; max-width: 34ch;
+    font-style:italic; font-weight:400; color: var(--ink-soft);
+    font-size: clamp(1.05rem,3.2vw,1.3rem); line-height:1.6;
+    transition-delay: 0.2s;
+  }
+
+  .before-together{ margin-top: clamp(1.8rem,5vh,2.6rem); }
+  .before-together .section-eyebrow{ transition-delay: 0.32s; }
+
+  .before-invite{
+    margin: clamp(0.7rem,2.4vw,1rem) auto 0; max-width: 32ch;
+    font-style:italic; font-weight:400; color: var(--ink-soft);
+    font-size: clamp(0.98rem,2.8vw,1.15rem); line-height:1.6;
+    transition-delay: 0.44s;
+  }
+
+  .before-photos{
+    margin-top: clamp(2.2rem,6vh,3rem);
+    display:flex; align-items:center; justify-content:center; gap: clamp(0.8rem,3vw,1.4rem);
+  }
+  .before-photos .portrait-frame{ width: clamp(96px, 28vw, 148px); transition-delay: 0.6s; }
+  .before-photos-amp{
+    display:block; font-family:'Playfair Display', serif; font-style:italic; font-weight:500;
+    color: var(--gold); font-size: clamp(1.3rem,4vw,1.7rem); opacity:0.92;
+  }
+
+  @media (min-width:900px){
+    .before-idoc{ padding: clamp(4.5rem,12vh,7rem) 10vw; }
+    .before-quote, .before-invite{ font-size: 1.25rem; }
+    .before-photos .portrait-frame{ width: clamp(150px,14vw,210px); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .before-copy > *, .gold-divider, .before-idoc .portrait-frame{ transition-duration:0.6s !important; }
+    .gold-divider .glow{ animation:none !important; }
+  }
+
+  /* ============================================================
+     WEDDING DETAILS + COUNTDOWN
+     ============================================================ */
+
+  .wedding-details{
+    position:relative; z-index:1;
+    padding: clamp(2.4rem,8vh,4rem) 8vw clamp(3.4rem,9vh,5rem);
+    text-align:center;
+    display:flex; flex-direction:column; align-items:center;
+  }
+
+  .details-copy > *{
+    opacity:0; transform: translateY(14px);
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.19,1,0.22,1);
+  }
+  .wedding-details.in-view .details-copy > *{ opacity:1; transform:none; }
+
+  .details-date{
+    margin: clamp(1.2rem,3.6vw,1.6rem) 0 0;
+    font-family:'Playfair Display', serif; font-weight:600; color: var(--ink);
+    font-size: clamp(1.5rem,5.4vw,2rem); letter-spacing:0.02em;
+    transition-delay: 0.16s;
+  }
+  .details-day{
+    margin: clamp(0.3rem,1.2vw,0.45rem) 0 0; font-style:italic; color: var(--ink-soft);
+    font-size: clamp(1rem,2.8vw,1.15rem);
+    transition-delay: 0.26s;
+  }
+  .details-time{
+    margin: clamp(0.3rem,1.2vw,0.45rem) 0 0;
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.18em; padding-left:0.18em;
+    color: var(--gold); font-size: clamp(0.78rem,2.2vw,0.9rem);
+    transition-delay: 0.36s;
+  }
+  .details-venue{
+    margin: clamp(1.4rem,3.6vw,1.8rem) 0 0; line-height:1.5;
+    font-family:'Jost', sans-serif; font-weight:300; letter-spacing:0.14em;
+    color: var(--ink); font-size: clamp(0.92rem,2.6vw,1.05rem);
+    transition-delay: 0.5s;
+  }
+  .details-venue strong{ display:block; font-weight:500; letter-spacing:0.2em; margin-bottom:0.3rem; }
+  .details-poruwa{
+    margin: clamp(0.6rem,2vw,0.85rem) 0 0;
+    font-family:'Jost', sans-serif; font-weight:300; letter-spacing:0.16em;
+    color: var(--ink-soft); font-size: clamp(0.72rem,2vw,0.82rem);
+    transition-delay: 0.6s;
+  }
+
+  .countdown{
+    display:flex; align-items:flex-start; justify-content:center;
+    gap: clamp(1.2rem,5vw,2.6rem);
+    margin: clamp(2.2rem,6vh,3rem) 0 0;
+    opacity:0; transform: translateY(14px);
+    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
+  }
+  .wedding-details.in-view .countdown{ opacity:1; transform:none; }
+
+  .countdown-item{ display:flex; flex-direction:column; align-items:center; min-width: 2.4em; }
+  .countdown-number{
+    font-family:'Playfair Display', serif; font-weight:600; color: var(--ink);
+    font-size: clamp(1.7rem,7vw,2.5rem); line-height:1;
+    transition: opacity 0.3s ease;
+    font-variant-numeric: tabular-nums;
+  }
+  .countdown-label{
+    margin-top: 0.4em;
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.22em; padding-left:0.22em;
+    color: var(--gold); font-size: clamp(0.6rem,1.8vw,0.68rem);
+  }
+
+  .countdown-arrived{
+    margin: clamp(2.2rem,6vh,3rem) 0 0;
+    font-family:'Playfair Display', serif; font-style:italic; font-weight:500;
+    color: var(--ink); font-size: clamp(1.3rem,4vw,1.7rem);
+  }
+
+  .details-actions{
+    display:flex; flex-direction:column; align-items:center; gap: clamp(1rem,3vw,1.3rem);
+    margin-top: clamp(2.4rem,6.5vh,3.2rem);
+    opacity:0; transform: translateY(14px);
+    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
+  }
+  .wedding-details.in-view .details-actions{ opacity:1; transform:none; }
+
+  .save-date-btn{
+    display:inline-flex; align-items:center; gap:0.6em;
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.22em; padding-left:0.22em;
+    font-size: clamp(0.72rem,1.8vw,0.82rem); color: var(--ink);
+    background: rgba(246,241,231,0.5);
+    border: 1px solid var(--gold-line);
+    padding: 0.85em 1.6em;
+    cursor:pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  .save-date-btn:hover{ background: rgba(246,241,231,0.85); }
+  .save-date-btn:active{ transform: scale(0.97); }
+  .save-date-btn svg{ width:15px; height:15px; color: var(--gold); flex:none; }
+
+  .location-cta{
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.22em; padding-left:0.22em;
+    font-size: clamp(0.7rem,1.8vw,0.8rem); color: var(--gold);
+    text-decoration:none; border-bottom: 1px solid var(--gold-line);
+    padding-bottom: 0.3em; transition: border-color 0.3s ease, opacity 0.3s ease;
+  }
+  .location-cta:hover{ opacity:0.75; }
+  .location-cta span{ margin-left:0.3em; }
+
+  @media (min-width:900px){
+    .wedding-details{ padding: clamp(3rem,10vh,5rem) 10vw clamp(4rem,11vh,6rem); }
+    .countdown{ gap: clamp(2rem,4vw,3.4rem); }
+    .details-actions{ flex-direction:row; gap: clamp(1.6rem,3vw,2.4rem); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .details-copy > *, .countdown, .details-actions{ transition-duration:0.6s !important; }
   }
   /* ============================================================
      SOUNDTRACK MUTE/UNMUTE CONTROL
@@ -726,7 +944,97 @@
     </div>
       </section>
 
-      <!-- further post-hero sections (story, details, RSVP, gallery) continue below,
+      <!-- ============================================================
+           BEFORE WE SAY "I DO" — the emotional bridge between meeting
+           the families and the practical wedding details.
+           ============================================================ -->
+      <section class="before-idoc" id="beforeIDo" aria-label="Before We Say I Do">
+        <div class="before-copy">
+          <span class="section-eyebrow">BEFORE WE SAY</span>
+          <h2 class="section-heading">&ldquo;I Do&rdquo;&hellip;</h2>
+
+          <p class="before-quote">From two individual journeys to one beautiful beginning, we are grateful to share this moment with the people who mean the most to us.</p>
+
+          <div class="before-together">
+            <span class="section-eyebrow">TOGETHER WITH OUR FAMILIES</span>
+          </div>
+
+          <p class="before-invite">We invite you to celebrate with us as we begin this beautiful chapter together.</p>
+        </div>
+
+        <div class="before-photos">
+          <div class="portrait-frame">
+            <img class="portrait-img" src="hashini-portrait.jpg" alt="Hashini" loading="lazy">
+          </div>
+          <span class="before-photos-amp">&amp;</span>
+          <div class="portrait-frame">
+            <img class="portrait-img" src="thilanga-portrait.jpg" alt="Thilanga" loading="lazy">
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           WEDDING DETAILS + COUNTDOWN
+           ============================================================ -->
+      <section class="wedding-details" id="weddingDetails" aria-label="Wedding Details and Countdown">
+        <div class="gold-divider" id="detailsDividerTop" aria-hidden="true">
+          <span class="line"></span>
+          <span class="gold-point">
+            <svg viewBox="0 0 20 20"><use href="#sparkShape" class="spark" /></svg>
+            <span class="glow"></span>
+          </span>
+          <span class="line right"></span>
+        </div>
+
+        <div class="details-copy" id="detailsCopy">
+          <span class="section-eyebrow">THE DAY WE SAY</span>
+          <h2 class="section-heading">&ldquo;I Do&rdquo;</h2>
+
+          <p class="details-date">26 November 2026</p>
+          <p class="details-day">Thursday</p>
+          <p class="details-time">09:00 AM ONWARDS</p>
+
+          <p class="details-venue"><strong>Hotel Grand Palace</strong>Hikkaduwa</p>
+          <p class="details-poruwa">PORUWA CEREMONY &middot; 09:35 AM</p>
+        </div>
+
+        <div class="countdown" id="countdown" aria-label="Countdown to the wedding">
+          <div class="countdown-item">
+            <span class="countdown-number" id="cdDays">00</span>
+            <span class="countdown-label">Days</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="cdHours">00</span>
+            <span class="countdown-label">Hours</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="cdMinutes">00</span>
+            <span class="countdown-label">Minutes</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="cdSeconds">00</span>
+            <span class="countdown-label">Seconds</span>
+          </div>
+        </div>
+        <p class="countdown-arrived" id="countdownArrived" hidden>Today is the day</p>
+
+        <div class="details-actions" id="detailsActions">
+          <button type="button" class="save-date-btn" id="saveDateBtn">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3.5" y="5" width="17" height="15" rx="1.2" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M3.5 9.5h17" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M8 3v3.4M16 3v3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M8.4 13.2l1.9 1.9 3.8-3.9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            SAVE THE DATE
+          </button>
+          <a class="location-cta" href="https://share.google/igSaItVGxoklcSI4m" target="_blank" rel="noopener">
+            VIEW LOCATION <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- further post-hero sections (location, RSVP, gallery, closing) continue below,
            all sharing the same .post-hero-bg behind them -->
     </div>
   </div>
@@ -889,7 +1197,10 @@
     document.getElementById('familiesIntro'),
     document.getElementById('brideBlock'),
     document.getElementById('groomBlock'),
-    document.getElementById('familiesMidDivider')
+    document.getElementById('familiesMidDivider'),
+    document.getElementById('beforeIDo'),
+    document.getElementById('weddingDetails'),
+    document.getElementById('detailsDividerTop')
   ].filter(Boolean);
 
   if ('IntersectionObserver' in window && revealTargets.length){
@@ -938,6 +1249,80 @@
     bgObserver.observe(postHero);
   } else if (postHeroBg){
     postHeroBg.classList.add('visible');
+  }
+
+  // ---- Wedding countdown ----
+  // Runs on a single continuous setInterval started once at load — it is
+  // never reset or re-created by scrolling or the section entering view.
+  const WEDDING_DATETIME = new Date('2026-11-26T09:00:00+05:30').getTime();
+  const cdDays = document.getElementById('cdDays');
+  const cdHours = document.getElementById('cdHours');
+  const cdMinutes = document.getElementById('cdMinutes');
+  const cdSeconds = document.getElementById('cdSeconds');
+  const countdownEl = document.getElementById('countdown');
+  const countdownArrived = document.getElementById('countdownArrived');
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function updateCountdown(){
+    if (!cdDays) return;
+    const diff = WEDDING_DATETIME - Date.now();
+
+    if (diff <= 0){
+      if (countdownEl) countdownEl.hidden = true;
+      if (countdownArrived) countdownArrived.hidden = false;
+      return;
+    }
+
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+
+    // a very subtle cross-fade on each tick rather than an abrupt swap
+    [[cdDays, days], [cdHours, hours], [cdMinutes, minutes], [cdSeconds, seconds]].forEach(([el, val]) => {
+      const next = pad(val);
+      if (el.textContent !== next){
+        el.style.opacity = '0.4';
+        el.textContent = next;
+        requestAnimationFrame(() => { el.style.opacity = '1'; });
+      }
+    });
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ---- Save the Date (.ics download) ----
+  const saveDateBtn = document.getElementById('saveDateBtn');
+  if (saveDateBtn){
+    saveDateBtn.addEventListener('click', () => {
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Hashini and Thilanga Wedding//EN',
+        'BEGIN:VEVENT',
+        'UID:hashini-thilanga-wedding-20261126@invitation',
+        'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
+        'DTSTART:20261126T033000Z',
+        'DTEND:20261126T113000Z',
+        'SUMMARY:Hashini & Thilanga\'s Wedding',
+        'DESCRIPTION:Poruwa Ceremony at 09:35 AM. Join us as we celebrate!',
+        'LOCATION:Hotel Grand Palace\\, Hikkaduwa',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Hashini-Thilanga-Wedding.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
   }
 })();
 </script>
