@@ -13,6 +13,9 @@
     --gold: #A5793B;
     --gold-bright: #F0D9A0;
     --gold-line: rgba(165,121,59,0.55);
+    --ivory: #F6F1E7;
+    --ivory-2: #EFE5D0;
+    --ivory-deep: #E5D6B4;
     --safe-t: env(safe-area-inset-top, 0px);
     --safe-b: env(safe-area-inset-bottom, 0px);
   }
@@ -302,6 +305,136 @@
     .hero-names, .hero-scroll span.label, .hero-scroll .stem{ animation:none !important; }
     .hero-content > *{ transition-duration:0.6s !important; }
   }
+
+  /* ============================================================
+     OUR FAMILIES
+     ============================================================ */
+
+  .families{
+    position:relative;
+    background: var(--ivory);
+    padding: 0 0 clamp(4rem,10vh,6rem);
+    overflow:hidden;
+  }
+
+  .families-bg{
+    position:absolute; inset:0; pointer-events:none; z-index:0;
+    background: radial-gradient(120% 60% at 50% 0%, var(--ivory-2) 0%, var(--ivory) 45%, var(--ivory) 100%);
+  }
+  .families-bg::before{
+    /* soft bridge from the hero's dark video tone into the ivory chapter */
+    content:""; position:absolute; top:0; left:0; right:0; height:min(18vh,160px);
+    background: linear-gradient(to bottom, rgba(21,16,9,0.4), rgba(21,16,9,0));
+  }
+  .families-bg::after{
+    content:""; position:absolute; inset:0; opacity:0.4; mix-blend-mode: multiply;
+    background-image: radial-gradient(rgba(36,28,19,0.05) 1px, transparent 1px);
+    background-size: 2.6px 2.6px;
+  }
+
+  .families-intro{
+    position:relative; z-index:1; text-align:center;
+    padding: clamp(4.5rem,13vh,7rem) 8vw clamp(2.4rem,6vh,3.4rem);
+    opacity:0; transform: translateY(16px);
+    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
+  }
+  .families-intro.in-view{ opacity:1; transform:none; }
+
+  .families-eyebrow{
+    font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.72rem,1.6vw,0.86rem);
+    letter-spacing:0.42em; padding-left:0.42em; color: var(--gold);
+  }
+
+  .families-divider{ width:96px; height:13px; margin: clamp(1rem,2.6vw,1.3rem) auto 0; }
+  .families-divider line{ stroke: var(--gold-line); stroke-width:1; }
+  .families-divider .spark{ fill: var(--gold); }
+
+  .person-block{
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+    padding: 0 8vw;
+  }
+
+  .portrait-frame{
+    width: min(76vw, 380px);
+    padding: 12px;
+    background: linear-gradient(180deg, #FFFDF7, var(--ivory-2));
+    border: 1px solid var(--gold-line);
+    box-shadow: 0 22px 46px -16px rgba(36,28,19,0.28), 0 3px 12px rgba(36,28,19,0.1);
+    position:relative;
+    opacity:0; transform: scale(1.05);
+    filter: blur(4px);
+    transition: opacity 1.6s ease, transform 1.9s cubic-bezier(0.19,1,0.22,1), filter 1.6s ease;
+  }
+  .portrait-frame::after{
+    content:""; position:absolute; inset:12px; border:1px solid rgba(165,121,59,0.28); pointer-events:none;
+  }
+  .person-block.in-view .portrait-frame{ opacity:1; transform: scale(1); filter: blur(0); }
+
+  .portrait-img{ display:block; width:100%; height:auto; }
+
+  .person-copy > *{
+    opacity:0; transform: translateY(14px);
+    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
+  }
+  .person-block.in-view .person-copy > *{ opacity:1; transform:none; }
+
+  .person-copy{ margin-top: clamp(1.6rem,4vw,2.2rem); }
+
+  .person-role{
+    display:block;
+    font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.7rem,1.6vw,0.82rem);
+    letter-spacing:0.42em; padding-left:0.42em; color: var(--gold);
+    transition-delay: 0.1s;
+  }
+
+  .person-name{
+    margin: clamp(0.5rem,1.6vw,0.7rem) 0 0;
+    font-family:'Playfair Display', serif; font-weight:600; letter-spacing:0.02em;
+    font-size: clamp(2.1rem,7.6vw,3.1rem); color: var(--ink);
+    transition-delay: 0.22s;
+  }
+
+  .person-relation{
+    margin: clamp(0.8rem,2.4vw,1.1rem) 0 0;
+    font-style: italic; font-weight:400; color: var(--ink-soft);
+    font-size: clamp(1rem,2.6vw,1.2rem);
+    transition-delay: 0.34s;
+  }
+
+  .person-parents{
+    margin: clamp(0.5rem,1.6vw,0.7rem) 0 0; line-height:1.7;
+    font-family:'Jost', sans-serif; font-weight:300; letter-spacing:0.06em;
+    font-size: clamp(0.9rem,2.2vw,1.02rem); color: var(--ink);
+    transition-delay: 0.44s;
+  }
+  .person-parents .amp-small{
+    display:block; font-family:'Playfair Display', serif; font-style:italic; font-weight:500;
+    color: var(--gold); font-size:1.05em; margin: 0.15em 0;
+  }
+
+  .families-mid-divider{
+    display:flex; align-items:center; justify-content:center; gap: 1rem;
+    margin: clamp(3.4rem,9vh,5rem) auto; width: min(60vw, 220px);
+    opacity:0; transition: opacity 1.2s ease;
+    position:relative; z-index:1;
+  }
+  .families-mid-divider.in-view{ opacity:0.8; }
+  .families-mid-divider .line{ flex:1; height:1px; background: linear-gradient(90deg, transparent, var(--gold-line)); }
+  .families-mid-divider .line.right{ background: linear-gradient(90deg, var(--gold-line), transparent); }
+  .families-mid-divider svg{ width:14px; height:14px; flex:none; }
+  .families-mid-divider .spark{ fill: var(--gold); }
+
+  @media (min-width:900px){
+    .person-block{ padding: 0 12vw; }
+    .portrait-frame{ width: min(30vw, 360px); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .families-intro, .portrait-frame, .person-copy > *, .families-mid-divider{
+      transition-duration:0.6s !important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -393,7 +526,63 @@
     </div>
   </section>
 
-  <!-- further sections (story, details, RSVP, gallery) continue below -->
+  <!-- ============================================================
+       OUR FAMILIES — the cinematic pace slows here; two portraits,
+       revealed one at a time as the guest scrolls, in the same warm
+       ivory + champagne-gold + editorial-serif language as Opening/Hero.
+       ============================================================ -->
+  <section class="families" id="families" aria-label="Our Families">
+    <div class="families-bg" aria-hidden="true"></div>
+
+    <div class="families-intro" id="familiesIntro">
+      <span class="families-eyebrow">OUR FAMILIES</span>
+      <svg class="families-divider" viewBox="0 0 96 13" aria-hidden="true">
+        <line x1="0" y1="6.5" x2="38" y2="6.5" />
+        <use href="#sparkShape" class="spark" transform="translate(38,-3.5)" />
+        <line x1="58" y1="6.5" x2="96" y2="6.5" />
+      </svg>
+    </div>
+
+    <article class="person-block" id="brideBlock">
+      <div class="portrait-frame">
+        <img class="portrait-img" src="hashini-portrait.jpg" alt="Hashini" loading="lazy">
+      </div>
+      <div class="person-copy">
+        <span class="person-role">BRIDE</span>
+        <h3 class="person-name">Hashini</h3>
+        <p class="person-relation">Daughter of</p>
+        <p class="person-parents">
+          Mr. D. Stanly Kumarasiri
+          <span class="amp-small">&amp;</span>
+          Mrs. S. Nilanthi
+        </p>
+      </div>
+    </article>
+
+    <div class="families-mid-divider" id="familiesMidDivider" aria-hidden="true">
+      <span class="line"></span>
+      <svg viewBox="0 0 20 20"><use href="#sparkShape" class="spark" /></svg>
+      <span class="line right"></span>
+    </div>
+
+    <article class="person-block" id="groomBlock">
+      <div class="portrait-frame">
+        <img class="portrait-img" src="thilanga-portrait.jpg" alt="Thilanga" loading="lazy">
+      </div>
+      <div class="person-copy">
+        <span class="person-role">GROOM</span>
+        <h3 class="person-name">Thilanga</h3>
+        <p class="person-relation">Son of</p>
+        <p class="person-parents">
+          Mr. G.H. Priyantha
+          <span class="amp-small">&amp;</span>
+          Mrs. M. Thushara Kumudini
+        </p>
+      </div>
+    </article>
+  </section>
+
+  <!-- further sections (details, RSVP, gallery) continue below -->
 </main>
 
 <script>
@@ -502,6 +691,29 @@
 
   stage.addEventListener('click', beginSequence);
   stage.addEventListener('keydown', (e) => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); beginSequence(); } });
+
+  // ---- Our Families: one-time reveal as each piece scrolls into view ----
+  const revealTargets = [
+    document.getElementById('familiesIntro'),
+    document.getElementById('brideBlock'),
+    document.getElementById('familiesMidDivider'),
+    document.getElementById('groomBlock')
+  ].filter(Boolean);
+
+  if ('IntersectionObserver' in window && revealTargets.length){
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.22, rootMargin: '0px 0px -8% 0px' });
+
+    revealTargets.forEach(el => revealObserver.observe(el));
+  } else {
+    revealTargets.forEach(el => el.classList.add('in-view'));
+  }
 })();
 </script>
 
