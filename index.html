@@ -338,21 +338,33 @@
   }
 
   .families-intro{
-    position:relative; z-index:1; text-align:center;
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; align-items:center; text-align:center;
     padding: 0 4vw clamp(1.1rem,3.4vh,1.8rem);
-    opacity:0; transform: translateY(14px);
-    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
     flex: none;
   }
-  .families-intro.in-view{ opacity:1; transform:none; }
 
   .families-eyebrow{
     font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.62rem,1.6vw,0.82rem);
     letter-spacing:0.4em; padding-left:0.4em; color: var(--gold);
   }
 
-  .families-divider{ width:60px; height:11px; margin: clamp(0.5rem,1.6vw,0.85rem) auto 0; }
-  .families-divider line{ stroke: var(--gold-line); stroke-width:1; }
+  /* symmetrical line–spark–line ornament, built with flex so it is always
+     mathematically centered regardless of viewport width */
+  .families-divider{
+    display:flex; align-items:center; justify-content:center;
+    gap: clamp(0.55rem,2vw,0.85rem);
+    width: min(58vw, 200px);
+    margin: clamp(0.6rem,1.8vw,0.95rem) auto 0;
+  }
+  .families-divider .fd-line{
+    flex:1 1 auto; height:1px; min-width:14px;
+    background: var(--gold-line);
+  }
+  .families-divider .fd-spark{
+    flex:none; width:11px; height:11px; display:block;
+  }
+  .families-divider .fd-spark svg{ width:100%; height:100%; display:block; }
   .families-divider .spark{ fill: var(--gold); }
 
   .families-row{
@@ -376,22 +388,12 @@
     border: 1px solid var(--gold-line);
     box-shadow: 0 14px 30px -12px rgba(36,28,19,0.28), 0 2px 8px rgba(36,28,19,0.1);
     position:relative;
-    opacity:0; transform: scale(1.05);
-    filter: blur(4px);
-    transition: opacity 1.6s ease, transform 1.9s cubic-bezier(0.19,1,0.22,1), filter 1.6s ease;
   }
   .portrait-frame::after{
     content:""; position:absolute; inset: clamp(6px,1.6vw,9px); border:1px solid rgba(165,121,59,0.28); pointer-events:none;
   }
-  .person-block.in-view .portrait-frame{ opacity:1; transform: scale(1); filter: blur(0); }
 
   .portrait-img{ display:block; width:100%; height:100%; object-fit:cover; object-position: center 18%; }
-
-  .person-copy > *{
-    opacity:0; transform: translateY(10px);
-    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
-  }
-  .person-block.in-view .person-copy > *{ opacity:1; transform:none; }
 
   .person-copy{ margin-top: clamp(0.6rem,2.4vw,1rem); width:100%; }
 
@@ -399,58 +401,118 @@
     display:block;
     font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.56rem,1.7vw,0.72rem);
     letter-spacing:0.32em; padding-left:0.32em; color: var(--gold);
-    transition-delay: 0.1s;
   }
 
   .person-name{
     margin: clamp(0.2rem,1vw,0.35rem) 0 0;
     font-family:'Playfair Display', serif; font-weight:600; letter-spacing:0.02em;
     font-size: clamp(1.2rem,6vw,1.7rem); color: var(--ink);
-    transition-delay: 0.22s;
   }
 
   .person-relation{
     margin: clamp(0.25rem,1.4vw,0.4rem) 0 0;
     font-style: italic; font-weight:400; color: var(--ink-soft);
     font-size: clamp(0.66rem,2.2vw,0.8rem);
-    transition-delay: 0.34s;
   }
 
   .person-parents{
     margin: clamp(0.2rem,1vw,0.3rem) 0 0; line-height:1.45;
     font-family:'Jost', sans-serif; font-weight:300; letter-spacing:0.03em;
     font-size: clamp(0.58rem,1.9vw,0.68rem); color: var(--ink);
-    transition-delay: 0.44s;
   }
   .person-parents .amp-small{
     display:block; font-family:'Playfair Display', serif; font-style:italic; font-weight:500;
     color: var(--gold); font-size:1.05em; margin: 0.1em 0;
   }
 
+  /* ---------------------------------------------------------------
+     choreographed reveal — one section-level timeline, not
+     independent per-element IntersectionObservers. JS adds
+     .step-1 … .step-8 to #families in sequence, cumulatively, once,
+     the first time the section enters the viewport.
+     --------------------------------------------------------------- */
+
+  .families-intro,
+  .portrait-frame,
+  .person-role,
+  .person-name,
+  .person-relation,
+  .person-parents,
+  .families-mid-divider{
+    opacity:0;
+    transform: translateY(12px) scale(0.985);
+    filter: blur(3px);
+    transition: opacity 1s cubic-bezier(0.19,1,0.22,1),
+                transform 1.05s cubic-bezier(0.19,1,0.22,1),
+                filter 0.9s ease;
+  }
+
+  .families.step-2 .families-intro{ opacity:1; transform:none; filter: blur(0); }
+  .families.step-3 .portrait-frame{ opacity:1; transform:none; filter: blur(0); }
+  .families.step-4 .person-role{ opacity:1; transform:none; filter: blur(0); }
+  .families.step-5 .person-name{ opacity:1; transform:none; filter: blur(0); }
+  .families.step-6 .person-relation{ opacity:1; transform:none; filter: blur(0); }
+  .families.step-7 .person-parents{ opacity:1; transform:none; filter: blur(0); }
+  .families.step-8 .families-mid-divider{ opacity:0.9; transform:none; filter: blur(0); }
+
+  /* once the sequence has completed, the section keeps this permanent
+     state — .step-8 is never removed, so scrolling away and back never
+     replays anything */
+
   .families-mid-divider{
     display:flex; align-items:center; justify-content:center; gap: 0.7rem;
     margin: clamp(1.2rem,4vh,2rem) auto 0; width: min(64vw, 240px);
-    opacity:0; transition: opacity 1.2s ease;
     position:relative; z-index:1; flex: none;
   }
-  .families-mid-divider.in-view{ opacity:0.85; }
   .families-mid-divider .line{ flex:1; height:1px; background: linear-gradient(90deg, transparent, var(--gold-line)); }
   .families-mid-divider .line.right{ background: linear-gradient(90deg, var(--gold-line), transparent); }
-  .families-mid-divider .gold-point{ position:relative; width:14px; height:14px; flex:none; display:flex; align-items:center; justify-content:center; }
-  .families-mid-divider svg{ width:11px; height:11px; flex:none; position:relative; z-index:1; }
+
+  /* the living-gold point: the LINE stays static — only this small point
+     travels, center → slightly up → center → slightly down → center. */
+  .families-mid-divider .gold-point{
+    position:relative; width:14px; height:14px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    animation: goldTravel 3.4s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .families.step-8 .families-mid-divider .gold-point{ animation-play-state: running; }
+
+  .families-mid-divider svg{
+    width:11px; height:11px; flex:none; position:relative; z-index:1;
+    animation: goldGlow 3.4s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .families.step-8 .families-mid-divider svg{ animation-play-state: running; }
   .families-mid-divider .spark{ fill: var(--gold); }
+
   .families-mid-divider .glow{
-    position:absolute; left:50%; top:50%; width:16px; height:16px;
+    position:absolute; left:50%; top:50%; width:15px; height:15px;
     transform: translate(-50%,-50%);
     border-radius:50%;
-    background: radial-gradient(circle, rgba(240,217,160,0.85) 0%, rgba(240,217,160,0.25) 55%, rgba(240,217,160,0) 78%);
-    filter: blur(2.5px);
-    animation: goldBreathe 6.5s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(240,217,160,0.75) 0%, rgba(240,217,160,0.22) 55%, rgba(240,217,160,0) 78%);
+    filter: blur(2px);
+    opacity:0.5;
+    animation: goldGlowHalo 3.4s ease-in-out infinite;
+    animation-play-state: paused;
   }
-  @keyframes goldBreathe{
-    0%   { transform: translate(-50%,-50%) translateY(0); opacity:0.55; }
-    50%  { transform: translate(-50%,-50%) translateY(-2.5px); opacity:0.95; }
-    100% { transform: translate(-50%,-50%) translateY(0); opacity:0.55; }
+  .families.step-8 .families-mid-divider .glow{ animation-play-state: running; }
+
+  /* the point itself: a soft, slow vertical drift — never a flash or sweep */
+  @keyframes goldTravel{
+    0%   { transform: translateY(0); }
+    25%  { transform: translateY(-4px); }
+    50%  { transform: translateY(0); }
+    75%  { transform: translateY(4px); }
+    100% { transform: translateY(0); }
+  }
+  /* the glow breathes softer at center, a touch brighter at the extremes */
+  @keyframes goldGlow{
+    0%, 50%, 100%{ filter: drop-shadow(0 0 1px rgba(240,217,160,0.35)); }
+    25%, 75%{ filter: drop-shadow(0 0 3px rgba(240,217,160,0.7)); }
+  }
+  @keyframes goldGlowHalo{
+    0%, 50%, 100%{ opacity:0.4; transform: translate(-50%,-50%) scale(0.9); }
+    25%, 75%{ opacity:0.75; transform: translate(-50%,-50%) scale(1.15); }
   }
 
   @media (min-width:480px) and (min-height:800px){
@@ -471,9 +533,12 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .families-intro, .portrait-frame, .person-copy > *, .families-mid-divider{
-      transition-duration:0.6s !important;
+    .families-intro, .portrait-frame, .person-role, .person-name,
+    .person-relation, .person-parents, .families-mid-divider{
+      transition-duration:0.4s !important;
     }
+    .families-mid-divider .gold-point,
+    .families-mid-divider svg,
     .families-mid-divider .glow{ animation:none !important; }
   }
 </style>
@@ -577,11 +642,11 @@
 
     <div class="families-intro" id="familiesIntro">
       <span class="families-eyebrow">OUR FAMILIES</span>
-      <svg class="families-divider" viewBox="0 0 96 13" aria-hidden="true">
-        <line x1="0" y1="6.5" x2="38" y2="6.5" />
-        <use href="#sparkShape" class="spark" transform="translate(38,-3.5)" />
-        <line x1="58" y1="6.5" x2="96" y2="6.5" />
-      </svg>
+      <div class="families-divider" aria-hidden="true">
+        <span class="fd-line"></span>
+        <span class="fd-spark"><svg viewBox="0 0 20 20"><use href="#sparkShape" class="spark" /></svg></span>
+        <span class="fd-line"></span>
+      </div>
     </div>
 
     <div class="families-row">
@@ -738,27 +803,56 @@
   stage.addEventListener('click', beginSequence);
   stage.addEventListener('keydown', (e) => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); beginSequence(); } });
 
-  // ---- Our Families: one-time reveal as each piece scrolls into view ----
-  const revealTargets = [
-    document.getElementById('familiesIntro'),
-    document.getElementById('brideBlock'),
-    document.getElementById('groomBlock'),
-    document.getElementById('familiesMidDivider')
-  ].filter(Boolean);
+  // ---- Our Families: one single choreographed reveal, triggered once ----
+  // Rather than letting each element watch the viewport independently
+  // (which reveals everything together the moment the compact section
+  // scrolls in), the section itself is watched a single time, and a
+  // timeline of cumulative .step-N classes drives the sequence:
+  //   step-1 section has entered   step-5 names
+  //   step-2 "Our Families"        step-6 daughter/son of
+  //   step-3 both portraits        step-7 parents' names
+  //   step-4 bride/groom labels    step-8 living gold divider
+  const families = document.getElementById('families');
+  const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if ('IntersectionObserver' in window && revealTargets.length){
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting){
-          entry.target.classList.add('in-view');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.22, rootMargin: '0px 0px -8% 0px' });
+  function runFamiliesSequence(){
+    if (!families || families.dataset.revealed === 'true') return;
+    families.dataset.revealed = 'true';
 
-    revealTargets.forEach(el => revealObserver.observe(el));
-  } else {
-    revealTargets.forEach(el => el.classList.add('in-view'));
+    if (reducedMotion){
+      for (let i=1;i<=8;i++) families.classList.add('step-'+i);
+      return;
+    }
+
+    const timeline = [
+      { step:1, delay:0    },  // section has entered
+      { step:2, delay:200  },  // "Our Families" + ornament
+      { step:3, delay:550  },  // both portraits together
+      { step:4, delay:900  },  // BRIDE / GROOM labels
+      { step:5, delay:1150 },  // names
+      { step:6, delay:1400 },  // Daughter of / Son of
+      { step:7, delay:1650 },  // parents' names
+      { step:8, delay:2050 }   // living gold divider activates
+    ];
+    timeline.forEach(({step, delay}) => {
+      setTimeout(() => families.classList.add('step-'+step), delay);
+    });
+  }
+
+  if (families){
+    if ('IntersectionObserver' in window){
+      const familiesObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting){
+            runFamiliesSequence();
+            familiesObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
+      familiesObserver.observe(families);
+    } else {
+      runFamiliesSequence();
+    }
   }
 })();
 </script>
