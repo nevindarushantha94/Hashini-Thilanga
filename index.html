@@ -508,6 +508,39 @@
     }
     .families-mid-divider .glow{ animation:none !important; }
   }
+  /* ============================================================
+     SOUNDTRACK MUTE/UNMUTE CONTROL
+     ============================================================ */
+
+  .audio-toggle{
+    position: fixed;
+    top: calc(1rem + var(--safe-t));
+    right: calc(1rem + env(safe-area-inset-right, 0px));
+    z-index: 200;
+    width: 42px; height: 42px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius: 50%;
+    background: rgba(246,241,231,0.55);
+    border: 1px solid var(--gold-line);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 16px rgba(36,28,19,0.14);
+    color: var(--gold);
+    cursor: pointer;
+    padding:0;
+    opacity:0; pointer-events:none;
+    transition: opacity 1s ease, transform 0.3s ease, background 0.3s ease;
+  }
+  .audio-toggle.visible{ opacity:1; pointer-events:auto; }
+  .audio-toggle:active{ transform: scale(0.92); }
+  .audio-toggle .icon{ width:19px; height:19px; }
+  .audio-toggle .icon-off{ display:none; }
+  .audio-toggle.muted .icon-on{ display:none; }
+  .audio-toggle.muted .icon-off{ display:block; }
+
+  @media (prefers-reduced-motion: reduce){
+    .audio-toggle{ transition-duration:0.4s !important; }
+  }
 </style>
 </head>
 <body>
@@ -571,6 +604,24 @@
   <div class="exit-bloom" aria-hidden="true"></div>
 
 </div>
+
+<!-- Persistent wedding soundtrack — one audio element for the entire site.
+     Starts on the TOUCH TO BEGIN gesture; never recreated or reloaded. -->
+<audio id="bgAudio" loop preload="auto">
+  <source src="wedding-soundtrack.mp3" type="audio/mpeg">
+</audio>
+
+<button type="button" class="audio-toggle" id="audioToggle" aria-label="Mute soundtrack" aria-pressed="false">
+  <svg class="icon icon-on" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4 9.5v5h3.6L13 19V5L7.6 9.5H4Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+    <path d="M16.2 8.4c1 .95 1.6 2.2 1.6 3.6s-.6 2.65-1.6 3.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M18.4 6c1.7 1.6 2.7 3.75 2.7 6s-1 4.4-2.7 6" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity="0.7"/>
+  </svg>
+  <svg class="icon icon-off" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4 9.5v5h3.6L13 19V5L7.6 9.5H4Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+    <path d="M16.3 9.3l4.4 5.4M20.7 9.3l-4.4 5.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+  </svg>
+</button>
 
 <main>
   <!-- ============================================================
@@ -688,6 +739,8 @@
   const video = document.getElementById('openingVideo');
   const hero = document.getElementById('hero');
   const heroVideo = document.getElementById('heroVideo');
+  const bgAudio = document.getElementById('bgAudio');
+  const audioToggle = document.getElementById('audioToggle');
 
   // start loading the Hero video early so it is ready to play the instant
   // the opening film ends — no stall, no visible buffering.
@@ -698,6 +751,44 @@
   // scroll, resize, orientation change, or visibility change. As a last
   // line of defence, explicitly hold the final frame when it ends.
   heroVideo.addEventListener('ended', () => { heroVideo.pause(); });
+
+  // ---- Persistent wedding soundtrack ----
+  // ONE <audio> element for the whole site. It is started exactly once,
+  // synchronously inside the TOUCH TO BEGIN click handler (required for
+  // iOS/Safari autoplay rules), and is never paused, reloaded, or
+  // restarted afterwards — mute/unmute only ever toggles .muted.
+  let audioStarted = false;
+  let mutedPref = false;
+  try { mutedPref = sessionStorage.getItem('weddingSoundMuted') === 'true'; } catch (e) {}
+  bgAudio.muted = mutedPref;
+  audioToggle.classList.toggle('muted', mutedPref);
+  audioToggle.setAttribute('aria-pressed', String(mutedPref));
+
+  function startSoundtrack(){
+    if (audioStarted) return;
+    audioStarted = true;
+    bgAudio.volume = 0;
+    const p = bgAudio.play();
+    if (p && p.catch) p.catch(() => {});
+    // gentle ~600ms fade in to the resting volume, rather than a hard start
+    const target = 0.4;
+    const duration = 600;
+    const startTime = performance.now();
+    function step(now){
+      const t = Math.min(1, (now - startTime) / duration);
+      bgAudio.volume = target * t;
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+    audioToggle.classList.add('visible');
+  }
+
+  audioToggle.addEventListener('click', () => {
+    bgAudio.muted = !bgAudio.muted;
+    audioToggle.classList.toggle('muted', bgAudio.muted);
+    audioToggle.setAttribute('aria-pressed', String(bgAudio.muted));
+    try { sessionStorage.setItem('weddingSoundMuted', String(bgAudio.muted)); } catch (e) {}
+  });
 
   let hasBegun = false;
   let hasHandedOff = false;
@@ -765,6 +856,11 @@
     hasBegun = true;
     stage.setAttribute('aria-disabled','true');
     video.load();
+
+    // Start the soundtrack synchronously within this click handler —
+    // required by iOS/Safari autoplay rules, and it's the ONLY place
+    // in the whole script that ever calls bgAudio.play().
+    startSoundtrack();
 
     // 0.0s — tiny warm light response
     stage.classList.add('lit');
