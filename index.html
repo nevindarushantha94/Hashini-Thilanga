@@ -791,6 +791,163 @@
   @media (prefers-reduced-motion: reduce){
     .location-copy > *, .gold-divider{ transition-duration:0.6s !important; }
   }
+
+  /* ============================================================
+     RSVP
+     ============================================================ */
+
+  .rsvp{
+    position:relative; z-index:1;
+    padding: clamp(3rem,9vh,4.6rem) 7vw clamp(3.4rem,10vh,5rem);
+    text-align:center;
+    display:flex; flex-direction:column; align-items:center;
+  }
+
+  .rsvp.in-view .gold-divider{ opacity:0.85; }
+
+  .rsvp-intro > *{
+    opacity:0; transform: translateY(14px);
+    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
+  }
+  .rsvp.in-view .rsvp-intro > *{ opacity:1; transform:none; }
+
+  .rsvp-intro .section-heading{ transition-delay: 0.14s; }
+
+  .rsvp-sub{
+    margin: clamp(0.7rem,2.2vw,1rem) 0 0;
+    font-style: italic; font-weight:400; color: var(--ink-soft);
+    font-size: clamp(0.95rem,2.6vw,1.1rem);
+    transition-delay: 0.26s;
+  }
+
+  .rsvp-form{
+    width:100%; max-width: 460px; margin-top: clamp(2rem,5.5vh,2.8rem);
+    display:flex; flex-direction:column; align-items:center; gap: clamp(1.5rem,4vh,2rem);
+  }
+
+  .rsvp-form > *{
+    width:100%;
+    opacity:0; transform: translateY(12px);
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.19,1,0.22,1);
+  }
+  .rsvp.in-view .rsvp-form > *{ opacity:1; transform:none; }
+
+  .rsvp-field:nth-of-type(1){ transition-delay: 0.36s; }
+  .rsvp-field:nth-of-type(2){ transition-delay: 0.46s; }
+  .rsvp-field:nth-of-type(3){ transition-delay: 0.56s; }
+  .rsvp-field:nth-of-type(4){ transition-delay: 0.66s; }
+  .rsvp-submit{ transition-delay: 0.8s; }
+
+  .rsvp-label{
+    display:block;
+    font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.62rem,1.8vw,0.72rem);
+    letter-spacing:0.26em; padding-left:0.26em; color: var(--gold);
+    margin-bottom: 0.7em;
+  }
+  .rsvp-optional{ color: var(--ink-soft); letter-spacing:0.05em; text-transform:none; opacity:0.8; }
+
+  .rsvp-input{
+    width:100%;
+    font-family:'Cormorant Garamond', serif; font-size: clamp(1rem,3vw,1.15rem); color: var(--ink);
+    background: transparent; border:none; border-bottom: 1px solid var(--gold-line);
+    padding: 0.5em 0.2em; text-align:center;
+    transition: border-color 0.3s ease;
+  }
+  .rsvp-input::placeholder{ color: var(--ink-soft); opacity:0.55; font-style:italic; }
+  .rsvp-input:focus{ outline:none; border-color: var(--gold); }
+  .rsvp-textarea{ resize:none; line-height:1.6; text-align:center; font-style:italic; }
+
+  .rsvp-toggle{ display:flex; gap: clamp(0.5rem,2vw,0.8rem); width:100%; }
+  .rsvp-choice{
+    flex:1;
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.05em;
+    font-size: clamp(0.66rem,2.6vw,0.78rem); color: var(--ink-soft);
+    background: rgba(246,241,231,0.4); border: 1px solid var(--gold-line);
+    padding: 0.85em 0.4em; cursor:pointer;
+    transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  }
+  .rsvp-choice[aria-checked="true"]{
+    border-color: var(--gold); background: rgba(240,217,160,0.18); color: var(--ink);
+    box-shadow: 0 0 14px rgba(240,217,160,0.3);
+  }
+
+  .rsvp-sides{ display:flex; gap: clamp(0.6rem,2.4vw,0.9rem); width:100%; }
+  .rsvp-side{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:0.25em;
+    background: rgba(246,241,231,0.4); border: 1px solid var(--gold-line);
+    padding: clamp(0.8rem,3vw,1.1rem) 0.4em; cursor:pointer;
+    transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .rsvp-side[aria-checked="true"]{
+    border-color: var(--gold); background: rgba(240,217,160,0.18);
+    box-shadow: 0 0 14px rgba(240,217,160,0.3);
+  }
+  .rsvp-side-label{
+    font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.56rem,1.8vw,0.64rem);
+    letter-spacing:0.22em; padding-left:0.22em; color: var(--gold);
+  }
+  .rsvp-side-name{
+    font-family:'Playfair Display', serif; font-weight:600;
+    font-size: clamp(1.05rem,4.4vw,1.35rem); color: var(--ink);
+  }
+  .rsvp-side-role{
+    font-style:italic; font-weight:400; color: var(--ink-soft);
+    font-size: clamp(0.66rem,2.2vw,0.78rem);
+  }
+
+  .rsvp-validation{
+    margin:0; font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.04em;
+    font-size: clamp(0.72rem,2.2vw,0.82rem); color: #9B4A3F;
+    opacity:1 !important; transform:none !important;
+  }
+  .rsvp-validation[hidden]{ display:none; }
+
+  .rsvp-submit{
+    display:inline-flex; align-items:center; justify-content:center; gap:0.7em;
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.2em; padding-left:0.2em;
+    font-size: clamp(0.7rem,1.9vw,0.8rem); color: var(--ink);
+    background: rgba(246,241,231,0.5); border: 1px solid var(--gold-line);
+    padding: 1em 1.8em; cursor:pointer; text-align:left; line-height:1.4;
+    transition: background 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
+  }
+  .rsvp-submit:hover{ background: rgba(246,241,231,0.85); border-color: var(--gold); }
+  .rsvp-submit:active{ transform: scale(0.97); }
+  .rsvp-submit svg{ width:17px; height:17px; color: var(--gold); flex:none; }
+  .rsvp-submit small{ display:block; font-size:0.82em; color: var(--ink-soft); letter-spacing:0.14em; font-weight:300; }
+  .rsvp-submit .arrow{ color: var(--gold); transition: transform 0.3s ease; margin-left:0.2em; }
+  .rsvp-submit:hover .arrow{ transform: translateX(3px); }
+
+  .rsvp-contacts{
+    width:100%; max-width: 460px; margin-top: clamp(1.6rem,4.5vh,2.2rem);
+    display:flex; gap: clamp(1rem,4vw,1.8rem);
+    opacity:0; transform: translateY(12px);
+    transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.19,1,0.22,1);
+  }
+  .rsvp.in-view .rsvp-contacts{ opacity:1; transform:none; }
+
+  .rsvp-contact{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:0.3em;
+  }
+  .rsvp-contact-name{ font-family:'Playfair Display', serif; font-weight:600; color: var(--ink); font-size: clamp(1rem,3.6vw,1.15rem); }
+  .rsvp-contact-role{ font-style:italic; color: var(--ink-soft); font-size: clamp(0.68rem,2vw,0.78rem); }
+  .rsvp-contact-actions{ display:flex; gap:0.9em; margin-top:0.4em; }
+  .rsvp-contact-btn{
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.16em; padding-left:0.16em;
+    font-size: clamp(0.62rem,1.8vw,0.7rem); color: var(--gold);
+    text-decoration:none; border-bottom:1px solid var(--gold-line);
+    padding-bottom:0.25em; transition: border-color 0.3s ease, opacity 0.3s ease;
+  }
+  .rsvp-contact-btn:hover{ opacity:0.75; border-color: var(--gold); }
+
+  @media (min-width:900px){
+    .rsvp{ padding: clamp(4rem,11vh,6rem) 10vw; }
+    .rsvp-form{ max-width: 520px; }
+    .rsvp-contacts{ max-width: 520px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .rsvp-intro > *, .rsvp-form > *, .rsvp-contacts{ transition-duration:0.6s !important; }
+  }
   /* ============================================================
      SOUNDTRACK MUTE/UNMUTE CONTROL
      ============================================================ */
@@ -1125,7 +1282,103 @@
         </div>
       </section>
 
-      <!-- further post-hero sections (RSVP, gallery, closing) continue below,
+      <!-- ============================================================
+           RSVP — a warm invitation-response, not a corporate form.
+           Groom's side is handled by Thilanga's sister Dilini, since he
+           is currently overseas.
+           ============================================================ -->
+      <section class="rsvp" id="rsvp" aria-label="RSVP">
+        <div class="gold-divider" aria-hidden="true">
+          <span class="line"></span>
+          <span class="gold-point">
+            <svg viewBox="0 0 20 20"><use href="#sparkShape" class="spark" /></svg>
+            <span class="glow"></span>
+          </span>
+          <span class="line right"></span>
+        </div>
+
+        <div class="rsvp-intro">
+          <span class="section-eyebrow">RSVP</span>
+          <h2 class="section-heading">We Would Love to<br>Celebrate With You</h2>
+          <p class="rsvp-sub">Please confirm your attendance below.</p>
+        </div>
+
+        <form class="rsvp-form" id="rsvpForm" novalidate>
+          <div class="rsvp-field">
+            <label class="rsvp-label" for="rsvpName">Your Name</label>
+            <input class="rsvp-input" type="text" id="rsvpName" name="rsvpName" autocomplete="name" placeholder="Enter your full name">
+          </div>
+
+          <div class="rsvp-field">
+            <span class="rsvp-label">Will You Be Joining Us?</span>
+            <div class="rsvp-toggle" role="radiogroup" aria-label="Attendance">
+              <button type="button" class="rsvp-choice" data-attendance="accept" role="radio" aria-checked="false">Joyfully Accept</button>
+              <button type="button" class="rsvp-choice" data-attendance="decline" role="radio" aria-checked="false">Regretfully Decline</button>
+            </div>
+          </div>
+
+          <div class="rsvp-field">
+            <label class="rsvp-label" for="rsvpMessage">A Message for Hashini &amp; Thilanga <span class="rsvp-optional">(optional)</span></label>
+            <textarea class="rsvp-input rsvp-textarea" id="rsvpMessage" name="rsvpMessage" rows="3" placeholder="Write a few words&hellip;"></textarea>
+          </div>
+
+          <div class="rsvp-field">
+            <span class="rsvp-label">RSVP With</span>
+            <div class="rsvp-sides" role="radiogroup" aria-label="RSVP recipient">
+              <button type="button" class="rsvp-side" data-side="bride" role="radio" aria-checked="false">
+                <span class="rsvp-side-label">BRIDE&rsquo;S SIDE</span>
+                <span class="rsvp-side-name">Hashini</span>
+                <span class="rsvp-side-role">Bride</span>
+              </button>
+              <button type="button" class="rsvp-side" data-side="groom" role="radio" aria-checked="false">
+                <span class="rsvp-side-label">GROOM&rsquo;S SIDE</span>
+                <span class="rsvp-side-name">Dilini</span>
+                <span class="rsvp-side-role">On behalf of Thilanga</span>
+              </button>
+            </div>
+          </div>
+
+          <p class="rsvp-validation" id="rsvpValidation" role="alert" hidden></p>
+
+          <button type="submit" class="rsvp-submit" id="rsvpSubmit">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3.5c-4.7 0-8.5 3.3-8.5 7.4 0 2.3 1.2 4.4 3.2 5.8-.1 1-.5 2.2-1.2 3.1 1.4-.2 2.8-.8 3.9-1.6.8.2 1.7.3 2.6.3 4.7 0 8.5-3.3 8.5-7.6S16.7 3.5 12 3.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+            <span>SEND RSVP<br><small>via WhatsApp</small></span>
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </form>
+
+        <div class="gold-divider" aria-hidden="true">
+          <span class="line"></span>
+          <span class="gold-point">
+            <svg viewBox="0 0 20 20"><use href="#sparkShape" class="spark" /></svg>
+            <span class="glow"></span>
+          </span>
+          <span class="line right"></span>
+        </div>
+
+        <div class="rsvp-contacts">
+          <div class="rsvp-contact">
+            <span class="rsvp-contact-name">Hashini</span>
+            <span class="rsvp-contact-role">Bride</span>
+            <div class="rsvp-contact-actions">
+              <a class="rsvp-contact-btn" href="tel:0761864105">CALL</a>
+              <a class="rsvp-contact-btn" href="https://wa.me/94761864105" target="_blank" rel="noopener">WHATSAPP</a>
+            </div>
+          </div>
+          <div class="rsvp-contact">
+            <span class="rsvp-contact-name">Dilini</span>
+            <span class="rsvp-contact-role">On behalf of Thilanga</span>
+            <div class="rsvp-contact-actions">
+              <a class="rsvp-contact-btn" href="tel:0760802510">CALL</a>
+              <a class="rsvp-contact-btn" href="https://wa.me/94760802510" target="_blank" rel="noopener">WHATSAPP</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- further post-hero sections (gallery, closing) continue below,
            all sharing the same .post-hero-bg behind them -->
     </div>
   </div>
@@ -1294,7 +1547,8 @@
     document.getElementById('weddingDetails'),
     document.getElementById('detailsDividerTop'),
     document.getElementById('location'),
-    document.getElementById('locationDividerTop')
+    document.getElementById('locationDividerTop'),
+    document.getElementById('rsvp')
   ].filter(Boolean);
 
   if ('IntersectionObserver' in window && revealTargets.length){
@@ -1416,6 +1670,120 @@
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+  }
+
+  // ---- RSVP ----
+  const rsvpForm = document.getElementById('rsvpForm');
+  if (rsvpForm){
+    const nameInput = document.getElementById('rsvpName');
+    const messageInput = document.getElementById('rsvpMessage');
+    const validationEl = document.getElementById('rsvpValidation');
+    const attendanceButtons = Array.from(rsvpForm.querySelectorAll('.rsvp-choice'));
+    const sideButtons = Array.from(rsvpForm.querySelectorAll('.rsvp-side'));
+
+    let attendance = null; // 'accept' | 'decline'
+    let side = null; // 'bride' | 'groom'
+
+    const RECIPIENTS = {
+      bride: { phone: '94761864105', addressName: 'Hashini' },
+      groom: { phone: '94760802510', addressName: 'Dilini' }
+    };
+
+    function selectFrom(buttons, chosen, onChange){
+      buttons.forEach(btn => {
+        const isChosen = btn === chosen;
+        btn.setAttribute('aria-checked', String(isChosen));
+      });
+      onChange();
+    }
+
+    attendanceButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        attendance = btn.dataset.attendance;
+        selectFrom(attendanceButtons, btn, () => hideValidation());
+      });
+    });
+
+    sideButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        side = btn.dataset.side;
+        selectFrom(sideButtons, btn, () => hideValidation());
+      });
+    });
+
+    function hideValidation(){
+      validationEl.hidden = true;
+      validationEl.textContent = '';
+    }
+
+    function showValidation(msg){
+      validationEl.textContent = msg;
+      validationEl.hidden = false;
+    }
+
+    function buildMessage(guestName, personalMsg){
+      const recipient = RECIPIENTS[side];
+      const lines = [];
+
+      if (side === 'bride'){
+        lines.push('Hello Hashini,', '');
+        if (attendance === 'accept'){
+          lines.push(
+            'Thank you for inviting me to share your special day.', '',
+            "I'm delighted to confirm that I'll be joining you and Thilanga for your wedding celebration."
+          );
+        } else {
+          lines.push(
+            'Thank you so much for inviting me to celebrate your special day.', '',
+            "Unfortunately, I'm unable to join you and Thilanga for the wedding, but I'll be thinking of you both and wishing you a beautiful celebration."
+          );
+        }
+      } else {
+        lines.push('Hello Dilini,', '');
+        if (attendance === 'accept'){
+          lines.push(
+            "Thank you for inviting me to share Hashini & Thilanga's special day.", '',
+            "I'm delighted to confirm that I'll be joining them for their wedding celebration."
+          );
+        } else {
+          lines.push(
+            "Thank you so much for inviting me to celebrate Hashini & Thilanga's special day.", '',
+            "Unfortunately, I'm unable to join them for the wedding, but I'll be thinking of them and wishing them a beautiful celebration."
+          );
+        }
+      }
+
+      if (personalMsg){ lines.push('', personalMsg); }
+
+      if (attendance === 'accept'){
+        lines.push('', side === 'bride' ? 'Looking forward to celebrating with you both!' : 'Looking forward to celebrating with them!');
+      }
+
+      lines.push('', `— ${guestName}`);
+      return { text: lines.join('\n'), phone: recipient.phone };
+    }
+
+    rsvpForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const guestName = nameInput.value.trim();
+      const personalMsg = messageInput.value.trim();
+
+      const missing = [];
+      if (!guestName) missing.push('your name');
+      if (!attendance) missing.push('your attendance');
+      if (!side) missing.push('who to RSVP with');
+
+      if (missing.length){
+        showValidation('Please add ' + missing.join(', ') + ' before sending your RSVP.');
+        return;
+      }
+
+      hideValidation();
+      const { text, phone } = buildMessage(guestName, personalMsg);
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank', 'noopener');
     });
   }
 })();
