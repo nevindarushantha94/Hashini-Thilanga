@@ -64,7 +64,11 @@
 
   .bg-image{
     position:absolute; inset:-3%;
-    background-image: url('hashini-thilanga-opening-background.jpg');
+    /* The new candlelit opening no longer depends on the old opening
+       background photo — the file is kept in the project folder but is
+       intentionally not referenced here. A soft ivory/champagne gradient
+       stands in as the atmosphere the candlelight reveals. */
+    background-image: radial-gradient(120% 95% at 50% 32%, #FBF3DE 0%, #F2E5C6 40%, #E8D5A9 74%, #DFC998 100%);
     background-size: cover;
     background-position: center;
     animation: kenBurns 24s ease-in-out infinite alternate;
@@ -87,11 +91,20 @@
     position:relative; z-index:3; height:100%;
     display:flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center;
     padding: calc(7vh + var(--safe-t)) 9vw calc(6vh + var(--safe-b));
-    transition: opacity 1.25s ease, filter 1.25s ease;
+    opacity:0; transform: translateY(10px); filter: blur(10px);
+    transition: opacity 1.25s ease, filter 1.25s ease, transform 1.25s ease;
+    pointer-events:none;
   }
-  .invitation.dissolving .composition{ opacity:0; filter: blur(7px); }
+  /* The invitation stays hidden until the candle has been lit — the
+     candlelight is what reveals it (see .candle-gate below). */
+  .invitation.revealing .composition{
+    opacity:1; transform:none; filter:none; pointer-events:auto;
+    transition-duration: 2.6s, 2.6s, 2.6s;
+  }
+  .invitation.dissolving .composition{ opacity:0; filter: blur(7px); transition-duration: 1.25s; }
 
-  .date-row{ display:flex; flex-direction:column; align-items:center; gap:0.6rem; opacity:0; animation: riseIn 1.6s ease forwards 0.3s; }
+  .date-row{ display:flex; flex-direction:column; align-items:center; gap:0.6rem; opacity:0; }
+  .invitation.revealing .date-row{ animation: riseIn 1.6s ease forwards 0.5s; }
   @keyframes riseIn{ from{ opacity:0; transform: translateY(6px);} to{ opacity:1; transform:none; } }
 
   .date{
@@ -151,12 +164,13 @@
     margin: clamp(0.9rem,2.6vw,1.3rem) 0 0; font-style:italic; font-weight:400;
     font-size: clamp(1.05rem,3vw,1.45rem); color: var(--ink-soft); max-width:16ch;
     text-shadow: 0 1px 8px rgba(255,251,238,0.7);
-    animation: msgBreathe 7s ease-in-out infinite;
   }
+  .invitation.revealing .subtitle{ animation: msgBreathe 7s ease-in-out infinite; }
   @keyframes msgBreathe{ 0%,100%{ opacity:0.88; } 50%{ opacity:1; } }
 
-  .touch{ display:flex; flex-direction:column; align-items:center; gap:0.6rem;
-    transition: opacity 0.65s ease, transform 0.65s ease; }
+  /* The old "TOUCH TO BEGIN" prompt is superseded by the candle —
+     the candle touch is now the invitation's opening gesture. */
+  .touch{ display:none; }
   .touch-text{
     font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.68rem,1.4vw,0.8rem);
     letter-spacing:0.34em; color: var(--gold); padding-left:0.34em;
@@ -214,6 +228,139 @@
   @media (prefers-reduced-motion: reduce){
     .name-line,.touch-text,.touch-dot,.subtitle,.bg-image,.light-thread{ animation:none !important; }
     .composition,.light-bridge,.video-layer,.touch,.bg-wrap,.bg-glow{ transition-duration:0.5s !important; }
+  }
+
+  /* ============================================================
+     CANDLE OPENING — "Light the Moment"
+     Sits above everything else in the invitation stage until the
+     guest touches it. Isolated from the rest of the opening: it
+     only ever adds state classes to #stage (.ember-glow, .flame-lit,
+     .light-expanding, .show-monogram, .revealing, .light-full,
+     .candle-gone) which the existing opening reads via .invitation.*
+     selectors above. Nothing here touches Hero/Families/etc.
+     ============================================================ */
+
+  .candle-gate{
+    position:absolute; inset:0; z-index:30;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap: clamp(1.6rem,5vh,2.8rem);
+    padding: calc(6vh + var(--safe-t)) 8vw calc(8vh + var(--safe-b));
+    background: radial-gradient(120% 90% at 50% 42%, #241D14 0%, #17130D 55%, #0D0A06 100%);
+    cursor:pointer; overflow:hidden;
+    transition: opacity 1.8s ease;
+  }
+  .invitation.ignited .candle-gate{ pointer-events:none; }
+  .invitation.candle-gone .candle-gate{ opacity:0; }
+
+  .candle-gate::before{
+    content:""; position:absolute; inset:-12%; pointer-events:none;
+    background: radial-gradient(55% 45% at 50% 44%, rgba(165,121,59,0.07), transparent 70%);
+    animation: gateBreathe 6.5s ease-in-out infinite;
+  }
+  @keyframes gateBreathe{ 0%,100%{ opacity:0.55; transform:scale(1); } 50%{ opacity:1; transform:scale(1.035); } }
+
+  .candle-edge{ position:absolute; top:0; bottom:0; width:16%; opacity:0.55; pointer-events:none;
+    background: linear-gradient(to right, rgba(0,0,0,0.4), transparent); }
+  .candle-edge.right{ right:0; left:auto; background: linear-gradient(to left, rgba(0,0,0,0.4), transparent); }
+
+  .candle-dust{ position:absolute; width:2px; height:2px; border-radius:50%;
+    background: rgba(240,217,160,0.4); opacity:0; pointer-events:none; }
+  .candle-dust.d1{ left:28%; top:64%; animation: dustFloat 8.5s ease-in-out infinite; }
+  .candle-dust.d2{ left:68%; top:58%; animation: dustFloat 10.5s ease-in-out infinite 1.4s; }
+  .candle-dust.d3{ left:42%; top:70%; animation: dustFloat 9.5s ease-in-out infinite 3.1s; }
+  .candle-dust.d4{ left:60%; top:38%; animation: dustFloat 11s ease-in-out infinite 2.2s; }
+  .candle-dust.d5{ left:22%; top:34%; animation: dustFloat 9s ease-in-out infinite 4.3s; }
+  .candle-dust.d6{ left:78%; top:70%; animation: dustFloat 10s ease-in-out infinite 0.6s; }
+  @keyframes dustFloat{
+    0%{ opacity:0; transform:translateY(0); }
+    12%{ opacity:0.55; }
+    55%{ opacity:0.8; transform:translateY(-42px); }
+    100%{ opacity:0; transform:translateY(-74px); }
+  }
+  /* a few extra specks used only for the brief post-illumination celebration */
+  .candle-dust.d7{ left:14%; top:24%; animation: dustFloat 7s ease-in-out infinite; }
+  .candle-dust.d8{ left:86%; top:30%; animation: dustFloat 7.6s ease-in-out infinite 0.9s; }
+  .invitation:not(.light-full) .candle-dust.d7,
+  .invitation:not(.light-full) .candle-dust.d8{ animation-play-state: paused; opacity:0; }
+
+  .candle-figure{ position:relative; width: clamp(78px,16vw,112px); height: clamp(148px,30vh,208px); }
+
+  .candle-glow{
+    position:absolute; left:50%; top:19%; width:12px; height:12px;
+    transform:translate(-50%,-50%) scale(1); border-radius:50%; filter: blur(2px);
+    background: radial-gradient(circle, rgba(255,244,214,0.95) 0%, rgba(240,217,160,0.4) 42%, rgba(240,217,160,0) 72%);
+    opacity:0; pointer-events:none;
+    transition: opacity 1s ease, transform 2.6s cubic-bezier(0.19,1,0.22,1);
+  }
+  .invitation.flame-lit .candle-glow{ opacity:1; transform:translate(-50%,-50%) scale(6); }
+  .invitation.light-expanding .candle-glow{ transform:translate(-50%,-50%) scale(38); transition-duration: 5.5s; }
+  .invitation.light-full .candle-glow{ transform:translate(-50%,-50%) scale(85); opacity:0.8; transition-duration: 3.5s; }
+
+  .candle-svg{ position:relative; width:100%; height:100%; overflow:visible; }
+  .candle-holder{ fill:#372c1f; opacity:0.9; }
+  .candle-wax{ fill:#EEE5D0; }
+  .candle-wax-highlight{ fill:#FFFDF7; opacity:0.32; }
+  .candle-wick{ stroke:#2a2216; stroke-width:2.4; stroke-linecap:round; }
+
+  .candle-ember{ fill:#FFD9A0; opacity:0; filter: blur(0.3px); transition: opacity 0.4s ease-in; }
+  .invitation.ember-glow .candle-ember{ opacity:1; }
+
+  .candle-flame{ opacity:0; transform-origin: 60px 52px; transform: scaleY(0.15); transform-box: fill-box;
+    transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.34,1.4,0.64,1); }
+  .flame-outer{ fill:#F0D9A0; }
+  .flame-inner{ fill:#FFF8E6; }
+  .invitation.flame-lit .candle-flame{ opacity:1; transform: scaleY(1); animation: flameFlicker 2.6s ease-in-out infinite; }
+  @keyframes flameFlicker{
+    0%,100%{ transform:scaleY(1) scaleX(1) rotate(0deg); }
+    30%{ transform:scaleY(1.045) scaleX(0.98) rotate(-1deg); }
+    60%{ transform:scaleY(0.97) scaleX(1.02) rotate(1deg); }
+  }
+
+  .candle-hint{ display:flex; flex-direction:column; align-items:center; gap:0.8rem; text-align:center; }
+
+  .candle-title{
+    font-family:'Playfair Display', serif; font-weight:600; text-transform:uppercase;
+    letter-spacing:0.28em; padding-left:0.28em;
+    font-size: clamp(1rem,3.4vw,1.4rem); color: var(--gold-bright);
+    text-shadow: 0 0 18px rgba(240,217,160,0.35);
+    animation: candleTitleBreathe 3s ease-in-out infinite;
+    transition: opacity 1s ease;
+  }
+  @keyframes candleTitleBreathe{ 0%,100%{ opacity:0.55; } 50%{ opacity:1; } }
+
+  .candle-subtitle{
+    font-family:'Jost', sans-serif; font-weight:300; text-transform:uppercase;
+    letter-spacing:0.32em; padding-left:0.32em;
+    font-size: clamp(0.62rem,1.5vw,0.76rem); color: rgba(240,217,160,0.85);
+    animation: candleSubBreathe 2.1s ease-in-out infinite;
+    transition: opacity 0.7s ease;
+  }
+  @keyframes candleSubBreathe{ 0%,100%{ opacity:0.47; } 50%{ opacity:0.88; } }
+
+  .invitation.ignited .candle-subtitle{ animation:none; opacity:0; }
+  .invitation.ignited .candle-title{ animation:none; opacity:0.92; }
+  .invitation.monogram-out .candle-title{ opacity:0; transition-duration:1.2s; }
+
+  .candle-monogram{
+    font-family:'Playfair Display', serif; font-style:italic; font-weight:500;
+    font-size: clamp(1.5rem,4.6vw,2.1rem); letter-spacing:0.16em; color: var(--gold-bright);
+    opacity:0; filter: blur(6px); transform: translateY(6px); max-height:0; overflow:hidden;
+    text-shadow: 0 0 16px rgba(240,217,160,0.45);
+    transition: opacity 1.5s ease, filter 1.5s ease, transform 1.5s ease, max-height 0s linear 0s;
+  }
+  .invitation.show-monogram .candle-monogram{
+    opacity:1; filter:none; transform:none; max-height:3em;
+  }
+  .invitation.revealing .candle-monogram{ opacity:0; transition-duration:0.8s; }
+
+  @media (max-width:420px){
+    .candle-title{ letter-spacing:0.22em; }
+    .candle-subtitle{ letter-spacing:0.26em; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .candle-title,.candle-subtitle,.candle-flame,.candle-dust,.candle-gate::before{ animation:none !important; }
+    .candle-gate,.candle-glow,.candle-monogram{ transition-duration:0.5s !important; }
   }
 
   /* ============================================================
@@ -1047,7 +1194,47 @@
   </defs>
 </svg>
 
-<div class="invitation" id="stage" role="button" aria-label="Touch to begin the invitation" tabindex="0">
+<div class="invitation" id="stage">
+
+  <!-- ================= candle opening — "Light the Moment" =================
+       Sits above the rest of the opening until touched. Everything else in
+       the invitation (bg-wrap, composition, light-bridge, video-layer, etc.)
+       is untouched and unlocked by the state classes this adds to #stage. -->
+  <div class="candle-gate" id="candleGate" role="button" tabindex="0"
+       aria-label="Light the moment — touch to light the candle">
+
+    <div class="candle-edge" aria-hidden="true"></div>
+    <div class="candle-edge right" aria-hidden="true"></div>
+    <span class="candle-dust d1" aria-hidden="true"></span>
+    <span class="candle-dust d2" aria-hidden="true"></span>
+    <span class="candle-dust d3" aria-hidden="true"></span>
+    <span class="candle-dust d4" aria-hidden="true"></span>
+    <span class="candle-dust d5" aria-hidden="true"></span>
+    <span class="candle-dust d6" aria-hidden="true"></span>
+    <span class="candle-dust d7" aria-hidden="true"></span>
+    <span class="candle-dust d8" aria-hidden="true"></span>
+
+    <div class="candle-figure" aria-hidden="true">
+      <div class="candle-glow"></div>
+      <svg class="candle-svg" viewBox="0 0 120 220">
+        <ellipse class="candle-holder" cx="60" cy="206" rx="27" ry="7"></ellipse>
+        <rect class="candle-wax" x="41" y="58" width="38" height="148" rx="9"></rect>
+        <rect class="candle-wax-highlight" x="47" y="66" width="7" height="128" rx="3.5"></rect>
+        <line class="candle-wick" x1="60" y1="58" x2="60" y2="43"></line>
+        <circle class="candle-ember" cx="60" cy="41" r="2.4"></circle>
+        <g class="candle-flame">
+          <path class="flame-outer" d="M60,10 C73,27 75,41 60,53 C45,41 47,27 60,10 Z"></path>
+          <path class="flame-inner" d="M60,27 C66,35 66,43 60,49 C54,43 54,35 60,27 Z"></path>
+        </g>
+      </svg>
+    </div>
+
+    <div class="candle-hint">
+      <span class="candle-title">Light the Moment</span>
+      <span class="candle-monogram">H &middot; T</span>
+      <span class="candle-subtitle">Touch to light the candle</span>
+    </div>
+  </div>
 
   <div class="bg-wrap">
     <div class="bg-image"></div>
@@ -1606,8 +1793,46 @@
     setTimeout(() => stage.classList.add('bridge-fade'), 3800);
   }
 
-  stage.addEventListener('click', beginSequence);
-  stage.addEventListener('keydown', (e) => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); beginSequence(); } });
+  // ---- Candle opening: "Light the Moment" ----
+  // A single guest gesture (touch/click/Enter/Space) on the candle:
+  //   1) starts the soundtrack (the qualifying gesture for autoplay rules)
+  //   2) ignites the candle and lets its light reveal the invitation
+  //   3) automatically hands off into the EXISTING beginSequence() below,
+  //      which is completely unchanged and still does the one and only
+  //      dissolve → bridge → existing opening video transition.
+  const candleGate = document.getElementById('candleGate');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let hasIgnited = false;
+
+  function igniteCandle(){
+    if (hasIgnited) return;
+    hasIgnited = true;
+    candleGate.setAttribute('aria-disabled', 'true');
+    stage.classList.add('ignited');
+
+    // the candle touch is the real user gesture — start the soundtrack now
+    startSoundtrack();
+
+    const T = reducedMotion ? 0.22 : 1; // compress the whole timeline, don't skip it
+
+    setTimeout(() => stage.classList.add('ember-glow'), 80 * T);           // 0.0–0.4s wick ember
+    setTimeout(() => stage.classList.add('flame-lit'), 500 * T);           // 0.4–1.8s flame forms & stabilizes
+    setTimeout(() => stage.classList.add('light-expanding'), 1900 * T);    // candlelight begins expanding
+    setTimeout(() => stage.classList.add('monogram-out'), 1900 * T);
+    setTimeout(() => stage.classList.add('show-monogram'), 2150 * T);      // H · T resolves into view
+    setTimeout(() => stage.classList.add('revealing'), 4300 * T);          // names/date/venue emerge from the light
+    setTimeout(() => {
+      stage.classList.add('light-full');                                  // full warm illumination
+      stage.classList.add('candle-gone');                                 // candle layer dissolves away
+    }, 9700 * T);
+    setTimeout(() => {
+      candleGate.style.display = 'none';
+      beginSequence();                                                    // hand off — unchanged existing flow
+    }, 11600 * T);
+  }
+
+  candleGate.addEventListener('click', igniteCandle);
+  candleGate.addEventListener('keydown', (e) => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); igniteCandle(); } });
 
   // ---- Our Families: one-time reveal as each piece scrolls into view ----
   const revealTargets = [
