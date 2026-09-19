@@ -161,9 +161,12 @@
     font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.68rem,1.4vw,0.8rem);
     letter-spacing:0.34em; color: var(--gold); padding-left:0.34em;
     text-shadow: 0 1px 5px rgba(255,251,238,0.7);
-    animation: touchBreathe 3.6s ease-in-out infinite;
+    animation: touchBreathe 2.8s ease-in-out infinite;
   }
-  @keyframes touchBreathe{ 0%,100%{ opacity:0.62; letter-spacing:0.32em; } 50%{ opacity:1; letter-spacing:0.36em; } }
+  @keyframes touchBreathe{
+    0%,100%{ opacity:0.66; letter-spacing:0.32em; transform: translateY(0); }
+    50%{ opacity:1; letter-spacing:0.35em; transform: translateY(-2px); }
+  }
 
   .touch-track{ position:relative; width:64px; height:2px; }
   .touch-line{ position:absolute; inset:0; background: linear-gradient(90deg, transparent, var(--gold-line), transparent); }
@@ -173,6 +176,16 @@
   @keyframes dotTravel{ 0%,100%{ left:2%; opacity:0.4; } 50%{ left:88%; opacity:1; } }
 
   .invitation.touch-hidden .touch{ opacity:0; transform: translateY(6px); }
+
+  /* Opening screen: the background image already renders "SAVE THE DATE",
+     "HASHINI & THILANGA" and "26 NOVEMBER 2026", so the matching HTML type
+     is kept in the layout (to preserve the exact vertical rhythm the rest
+     of the composition — including TOUCH TO BEGIN — was tuned against)
+     but rendered invisible. The only visible HTML text on this screen is
+     TOUCH TO BEGIN. */
+  .date-row, .names-block, .subtitle{
+    opacity:0 !important; visibility:hidden; pointer-events:none;
+  }
 
   /* ================= dissolve particles ================= */
 
