@@ -156,9 +156,10 @@
   @keyframes msgBreathe{ 0%,100%{ opacity:0.88; } 50%{ opacity:1; } }
 
   .touch{ display:flex; flex-direction:column; align-items:center; gap:0.6rem;
+    margin-top: clamp(2.2rem, 9vh, 4.4rem);
     transition: opacity 0.65s ease, transform 0.65s ease; }
   .touch-text{
-    font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.68rem,1.4vw,0.8rem);
+    font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.8rem,1.65vw,0.94rem);
     letter-spacing:0.34em; color: var(--gold); padding-left:0.34em;
     text-shadow: 0 1px 5px rgba(255,251,238,0.7);
     animation: touchBreathe 2.8s ease-in-out infinite;
