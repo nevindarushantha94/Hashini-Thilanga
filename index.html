@@ -497,13 +497,20 @@
     padding: calc(clamp(2.2rem,6.5vh,3.2rem) + var(--safe-t)) 5vw calc(clamp(2.2rem,6.5vh,3.2rem) + var(--safe-b));
   }
 
-  /* whole-section pre-reveal atmosphere: subtle veiled state before entrance */
+  /* whole-section pre-reveal atmosphere: subtle veiled state before entrance.
+     Uses keyframe animations (not transitions) so the reveal reliably plays
+     on iOS Safari when the .in-view class is added by the scroll observer. */
   .families-stage{
     position:relative; z-index:1;
     opacity:0; filter: blur(6px); transform: scale(0.985);
-    transition: opacity 0.9s ease, filter 0.9s ease, transform 0.9s cubic-bezier(0.19,1,0.22,1);
   }
-  .families.in-view .families-stage{ opacity:1; filter: blur(0); transform: none; }
+  .families.in-view .families-stage{
+    animation: familiesRevealStage 0.7s ease-out 0s both;
+  }
+  @keyframes familiesRevealStage{
+    from{ opacity:0; filter: blur(6px); transform: scale(0.985); }
+    to{ opacity:1; filter: blur(0); transform: scale(1); }
+  }
 
   .section-watermark{
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
@@ -521,37 +528,44 @@
     flex: none;
   }
 
+  /* ---- top ornament: symmetrical center-out line draw, spark mathematically
+     centered at x=48 via an SVG <g> transform kept separate from the CSS
+     reveal transform below, so the two never fight each other. ---- */
   .families-divider{
-    display:block; width: clamp(92px,26vw,110px); height:14px;
+    display:block; width: clamp(92px,26vw,110px); height:auto;
+    aspect-ratio: 96 / 20; overflow:visible;
     margin: clamp(0.6rem,1.9vw,0.95rem) auto 0;
   }
   .families-divider line{
     stroke: var(--gold-line); stroke-width:1;
-    stroke-dasharray:1; stroke-dashoffset:1;
+    stroke-dasharray:40; stroke-dashoffset:40;
   }
   .families-divider .spark{
-    fill: var(--gold); opacity:0; transform-origin:center;
+    fill: var(--gold); opacity:0; transform-origin:10px 10px;
     transform: scale(0.4);
-    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.19,1,0.22,1);
   }
   .families.in-view .families-divider line{
-    animation: drawFromCenter 0.7s cubic-bezier(0.4,0,0.2,1) 0.5s forwards;
+    animation: familiesDrawOrnament 0.8s cubic-bezier(0.4,0,0.2,1) 0.7s both;
   }
   .families.in-view .families-divider .spark{
-    opacity:1; transform: scale(1);
-    transition-delay: 1.05s;
+    animation: familiesSparkIn 0.5s ease-out 1.05s both;
   }
-  @keyframes drawFromCenter{ to{ stroke-dashoffset:0; } }
+  @keyframes familiesDrawOrnament{ from{ stroke-dashoffset:40; } to{ stroke-dashoffset:0; } }
+  @keyframes familiesSparkIn{ from{ opacity:0; transform: scale(0.4); } to{ opacity:1; transform: scale(1); } }
 
   .families-eyebrow{
     display:inline-block;
     font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.85rem,2.2vw,1.05rem);
     letter-spacing:0.4em; padding-left:0.4em; color: var(--gold);
     opacity:0; filter: blur(3px); transform: translateY(10px);
-    transition: opacity 0.8s ease, filter 0.8s ease, transform 0.8s cubic-bezier(0.19,1,0.22,1);
-    transition-delay: 1.0s;
   }
-  .families.in-view .families-eyebrow{ opacity:1; filter:blur(0); transform:none; }
+  .families.in-view .families-eyebrow{
+    animation: familiesFadeUp 0.7s cubic-bezier(0.19,1,0.22,1) 0.4s both;
+  }
+  @keyframes familiesFadeUp{
+    from{ opacity:0; filter: blur(3px); transform: translateY(10px); }
+    to{ opacity:1; filter: blur(0); transform: none; }
+  }
 
   .families-row{
     position:relative; z-index:1;
@@ -576,61 +590,75 @@
     position:relative;
     opacity:0; transform: scale(1.04);
     filter: blur(4px);
-    transition: opacity 1.1s ease, transform 1.1s cubic-bezier(0.19,1,0.22,1), filter 0.9s ease,
-      border-color 0.7s ease, box-shadow 0.9s ease;
-    transition-delay: 1.4s;
   }
   .portrait-frame::after{
     content:""; position:absolute; inset: clamp(6px,1.6vw,9px); border:1px solid rgba(165,121,59,0.28); pointer-events:none;
   }
   .families.in-view .portrait-frame{
-    opacity:1; transform: scale(1); filter: blur(0);
-    border-color: var(--gold-line);
-    box-shadow: 0 14px 30px -12px rgba(36,28,19,0.28), 0 2px 8px rgba(36,28,19,0.1), 0 0 0 1px rgba(165,121,59,0.15);
+    animation: familiesFrameIn 0.8s cubic-bezier(0.19,1,0.22,1) 1.1s both;
+  }
+  @keyframes familiesFrameIn{
+    from{ opacity:0; transform: scale(1.04); filter: blur(4px); border-color:transparent;
+      box-shadow: 0 14px 30px -12px rgba(36,28,19,0.28), 0 2px 8px rgba(36,28,19,0.1), 0 0 0 0 rgba(165,121,59,0); }
+    to{ opacity:1; transform: scale(1); filter: blur(0); border-color: var(--gold-line);
+      box-shadow: 0 14px 30px -12px rgba(36,28,19,0.28), 0 2px 8px rgba(36,28,19,0.1), 0 0 0 1px rgba(165,121,59,0.15); }
   }
 
   .portrait-img{
     display:block; width:100%; height:100%; object-fit:cover; object-position: center 18%;
     filter: blur(3px); transform: scale(1.02);
-    transition: filter 0.8s ease, transform 0.8s ease; transition-delay: 2.0s;
   }
-  .families.in-view .portrait-img{ filter: blur(0); transform:none; }
+  .families.in-view .portrait-img{
+    animation: familiesSharpen 0.7s ease 1.7s both;
+  }
+  @keyframes familiesSharpen{
+    from{ filter: blur(3px); transform: scale(1.02); }
+    to{ filter: blur(0); transform: none; }
+  }
 
   .person-copy{ margin-top: clamp(1rem,3.4vw,1.5rem); width:100%; }
 
   .person-copy > *{
     opacity:0; filter: blur(2px); transform: translateY(10px);
-    transition: opacity 0.7s ease, filter 0.7s ease, transform 0.7s cubic-bezier(0.19,1,0.22,1);
   }
-  .families.in-view .person-copy > *{ opacity:1; filter:blur(0); transform:none; }
+  .families.in-view .person-copy > *{
+    animation-name: familiesFadeUp2;
+    animation-duration: 0.6s;
+    animation-timing-function: cubic-bezier(0.19,1,0.22,1);
+    animation-fill-mode: both;
+  }
+  @keyframes familiesFadeUp2{
+    from{ opacity:0; filter: blur(2px); transform: translateY(10px); }
+    to{ opacity:1; filter: blur(0); transform: none; }
+  }
 
   .person-role{
     display:block;
     font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.74rem,2.1vw,0.9rem);
     letter-spacing:0.32em; padding-left:0.32em; color: var(--gold);
-    transition-delay: 3.0s;
   }
+  .families.in-view .person-role{ animation-delay: 2.7s; }
 
   .person-name{
     margin: clamp(0.25rem,1.1vw,0.4rem) 0 0;
     font-family:'Playfair Display', serif; font-weight:600; letter-spacing:0.015em;
     font-size: clamp(1.7rem,7.6vw,2.2rem); color: var(--ink);
-    transition-delay: 2.5s;
   }
+  .families.in-view .person-name{ animation-delay: 2.2s; }
 
   .person-relation{
     margin: clamp(0.3rem,1.5vw,0.45rem) 0 0;
     font-style: italic; font-weight:400; color: var(--ink-soft);
     font-size: clamp(0.82rem,2.6vw,0.98rem);
-    transition-delay: 3.4s;
   }
+  .families.in-view .person-relation{ animation-delay: 3.1s; }
 
   .person-parents{
     margin: clamp(0.3rem,1.2vw,0.4rem) 0 0; line-height:1.55;
     font-family:'Jost', sans-serif; font-weight:300; letter-spacing:0.03em;
     font-size: clamp(0.82rem,2.5vw,0.95rem); color: var(--ink);
-    transition-delay: 4.0s;
   }
+  .families.in-view .person-parents{ animation-delay: 3.5s; }
   .person-parents .amp-small{
     display:block; font-family:'Playfair Display', serif; font-style:italic; font-weight:500;
     color: var(--gold); font-size:1.05em; margin: 0.1em 0;
@@ -639,10 +667,13 @@
   .families-mid-divider{
     display:flex; align-items:center; justify-content:center; gap: 0.6rem;
     margin: clamp(1.9rem,5.6vh,2.7rem) auto 0; width: min(70vw, 260px);
-    opacity:0; transition: opacity 0.8s ease; transition-delay: 4.6s;
+    opacity:0;
     position:relative; z-index:1; flex: none;
   }
-  .families.in-view .families-mid-divider{ opacity:0.9; }
+  .families.in-view .families-mid-divider{
+    animation: familiesDividerIn 0.6s ease 4.3s both;
+  }
+  @keyframes familiesDividerIn{ from{ opacity:0; } to{ opacity:0.9; } }
   .mid-divider-letter{
     font-family:'Playfair Display', serif; font-style:italic; font-weight:500;
     color: var(--gold); font-size: clamp(1rem,3vw,1.25rem); flex:none;
@@ -656,7 +687,7 @@
     opacity:0;
   }
   .families.in-view .families-mid-divider .line::after{
-    animation: lightTravel 0.9s ease-in-out 4.7s 1;
+    animation: lightTravel 0.9s ease-in-out 4.5s 1;
   }
   @keyframes lightTravel{
     0%   { transform: translate(-100%,-50%); opacity:0; }
@@ -676,7 +707,7 @@
     opacity:0;
   }
   .families.in-view .families-mid-divider .glow{
-    animation: goldSettle 3s ease-in-out 5.4s 1;
+    animation: goldSettle 2.5s ease-in-out 5.0s both;
   }
   @keyframes goldSettle{
     0%   { opacity:0.5; transform: translate(-50%,-50%) scale(1); }
@@ -693,7 +724,7 @@
     .families{ padding-top: calc(clamp(2.4rem,7.5vh,3.6rem) + var(--safe-t)); padding-bottom: calc(clamp(2.4rem,7.5vh,3.6rem) + var(--safe-b)); }
     .families-intro{ padding-bottom: clamp(1.7rem,4.2vh,2.5rem); }
     .families-eyebrow{ font-size: clamp(0.95rem,1.6vw,1.1rem); }
-    .families-divider{ width: clamp(110px,10vw,140px); height:16px; }
+    .families-divider{ width: clamp(110px,10vw,140px); }
     .families-row{ max-width: 980px; gap: clamp(3rem,8vw,7rem); }
     .person-block{ max-width: 320px; }
     .portrait-frame{ width: clamp(196px, 18vw, 290px); }
@@ -704,15 +735,29 @@
     .families-mid-divider{ margin-top: clamp(2.5rem,6.2vh,3.5rem); width:min(40vw,320px); }
   }
 
+  /* Reduced motion: still animates (per this invitation's request) but only
+     opacity/blur — no scale, no translateY, no light-travel sweep. Selectors
+     are matched at equal specificity to the rules above and declared after
+     them, so they win the cascade without needing !important overrides that
+     could accidentally freeze the normal presentation. */
   @media (prefers-reduced-motion: reduce){
-    .families-stage{ transition-duration:0.01s !important; }
-    .families-divider line, .families-divider .spark,
-    .families-eyebrow, .portrait-frame, .portrait-img,
-    .person-copy > *, .families-mid-divider{
-      transition-duration:0.01s !important; transition-delay:0s !important;
-      animation:none !important; stroke-dashoffset:0 !important;
+    @keyframes familiesGentleFade{
+      from{ opacity:0; filter: blur(2px); }
+      to{ opacity:1; filter: blur(0); }
     }
-    .families.in-view .families-mid-divider .glow{ opacity:0.75 !important; }
+    .families.in-view .families-stage{ animation: familiesGentleFade 0.4s ease-out 0s both; }
+    .families.in-view .families-divider line{ animation:none; stroke-dashoffset:0; }
+    .families.in-view .families-divider .spark{ animation: familiesGentleFade 0.4s ease-out 0.3s both; transform:none; }
+    .families.in-view .families-eyebrow{ animation: familiesGentleFade 0.4s ease-out 0.2s both; }
+    .families.in-view .portrait-frame{ animation: familiesGentleFade 0.4s ease-out 0.4s both; }
+    .families.in-view .portrait-img{ animation: familiesGentleFade 0.4s ease-out 0.6s both; }
+    .families.in-view .person-name{ animation: familiesGentleFade 0.4s ease-out 0.8s both; }
+    .families.in-view .person-role{ animation: familiesGentleFade 0.4s ease-out 0.95s both; }
+    .families.in-view .person-relation{ animation: familiesGentleFade 0.4s ease-out 1.1s both; }
+    .families.in-view .person-parents{ animation: familiesGentleFade 0.4s ease-out 1.25s both; }
+    .families.in-view .families-mid-divider{ animation: familiesGentleFade 0.4s ease-out 1.4s both; }
+    .families.in-view .families-mid-divider .line::after{ animation:none; opacity:0; }
+    .families.in-view .families-mid-divider .glow{ animation:none; opacity:0.7; }
   }
 
   /* ============================================================
@@ -1351,10 +1396,12 @@
         <div class="families-stage">
         <div class="families-intro" id="familiesIntro">
           <span class="families-eyebrow">OUR FAMILIES</span>
-          <svg class="families-divider" viewBox="0 0 96 13" aria-hidden="true">
-        <line x1="38" y1="6.5" x2="0" y2="6.5" pathLength="1" />
-        <use href="#sparkShape" class="spark" transform="translate(38,-3.5)" />
-        <line x1="58" y1="6.5" x2="96" y2="6.5" pathLength="1" />
+          <svg class="families-divider" viewBox="0 0 96 20" aria-hidden="true">
+        <line x1="48" y1="10" x2="8" y2="10" />
+        <g transform="translate(48,10) scale(0.5) translate(-10,-10)">
+          <use href="#sparkShape" class="spark" />
+        </g>
+        <line x1="48" y1="10" x2="88" y2="10" />
       </svg>
     </div>
 
