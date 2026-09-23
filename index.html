@@ -260,11 +260,8 @@
 
   @media (max-width:480px){
     .hero-content{ padding-left:5vw; padding-right:5vw; padding-bottom:calc(5.2vh + var(--safe-b)); }
-    .hero-invitation-line{ letter-spacing:0.22em; margin-bottom:0.72rem; }
     .hero-flourish{ margin-bottom:0.72rem; }
     .hero-family-line{ letter-spacing:0.045em; }
-    .hero-date{ letter-spacing:0.30em; padding-left:0.30em; }
-    .hero-venue{ letter-spacing:0.19em; padding-left:0.19em; }
   }
 
 
@@ -310,18 +307,6 @@
     animation-fill-mode: both;
   }
 
-  .hero-invitation-line{
-    font-family:'Cormorant Garamond', serif;
-    font-size: clamp(0.72rem, 2.15vw, 0.95rem);
-    font-weight:400;
-    letter-spacing:0.28em;
-    text-transform:uppercase;
-    color: var(--gold);
-    margin-bottom: clamp(0.8rem, 2.4vw, 1.15rem);
-    text-shadow: 0 1px 7px rgba(246,241,231,0.55);
-  }
-  .hero.in-view .hero-invitation-line{ animation-delay:0.15s; }
-
   .hero-flourish{
     display:flex; align-items:center; justify-content:center; gap:0.55rem;
     width:min(8rem,30vw); margin-bottom:clamp(0.7rem,2.1vw,1rem);
@@ -355,22 +340,6 @@
     margin:clamp(0.75rem,2.3vw,1.05rem) 0 clamp(0.8rem,2.5vw,1.2rem);
   }
   .hero.in-view .hero-detail-stem{ animation-delay:1.45s; }
-  .hero-date{
-    font-family:'Jost',sans-serif; font-size:clamp(0.75rem,2.45vw,0.98rem);
-    font-weight:400; letter-spacing:0.42em; padding-left:0.42em;
-    color:var(--ink-soft); text-transform:uppercase;
-    text-shadow:0 1px 8px rgba(246,241,231,0.6);
-  }
-  .hero.in-view .hero-date{ animation-delay:1.65s; }
-  .hero-venue{
-    margin-top:clamp(0.5rem,1.7vw,0.8rem);
-    font-family:'Jost',sans-serif; font-size:clamp(0.62rem,1.95vw,0.82rem);
-    letter-spacing:0.31em; padding-left:0.31em; font-weight:400;
-    color:var(--ink-soft); text-transform:uppercase;
-    text-shadow:0 1px 8px rgba(246,241,231,0.6);
-  }
-  .hero.in-view .hero-venue{ animation-delay:1.90s; }
-  .hero-venue span{ margin:0 0.35em; color:var(--gold); }
 
   .hero-monogram{
     font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.85rem,2.2vw,1rem);
@@ -443,14 +412,11 @@
     .hero.in-view .hero-content > *{
       animation: heroGentleFade 0.5s ease-out both;
     }
-    .hero.in-view .hero-invitation-line{ animation-delay:0.10s; }
     .hero.in-view .hero-flourish{ animation-delay:0.30s; }
     .hero.in-view .hero-monogram{ animation-delay:0.50s; }
     .hero.in-view .hero-names{ animation: heroGentleFade 0.5s ease-out 0.70s both; }
     .hero.in-view .hero-family-line{ animation-delay:0.95s; }
     .hero.in-view .hero-detail-stem{ animation-delay:1.15s; }
-    .hero.in-view .hero-date{ animation-delay:1.35s; }
-    .hero.in-view .hero-venue{ animation-delay:1.55s; }
   }
 
   /* ============================================================
@@ -1359,6 +1325,38 @@
       rgba(21,16,9,0.32) 100%);
   }
 
+  /* Small creator signature, shown only while the final video section is
+     in view. Piggybacks on the same visibility state the video loop above
+     already tracks (finalVisible) — no separate observer, no timers.
+     Plain opacity transition: safe on iOS Safari, no transform involved. */
+  .final-signature{
+    position:absolute; z-index:3;
+    left:50%; bottom:calc(1.3rem + env(safe-area-inset-bottom, 0px));
+    transform:translateX(-50%);
+    display:flex; align-items:center; gap:0.4rem;
+    max-width:calc(100vw - 2.5rem);
+    overflow:hidden; white-space:nowrap;
+    pointer-events:none;
+    opacity:0;
+    transition: opacity 1.1s ease;
+    will-change:opacity;
+  }
+  .final-signature.is-visible{ opacity:0.5; }
+  .final-signature-text{
+    font-family:'Cormorant Garamond', serif;
+    font-size: clamp(0.58rem, 1.6vw, 0.7rem);
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:#F6F1E7;
+    overflow:hidden; text-overflow:ellipsis;
+  }
+  .final-signature-whatsapp{
+    pointer-events:auto;
+    display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center;
+    color:#F6F1E7; line-height:0;
+  }
+  .final-signature-whatsapp svg{ display:block; fill:currentColor; }
+
   /* ============================================================
      SOUNDTRACK MUTE/UNMUTE CONTROL
      ============================================================ */
@@ -1491,14 +1489,11 @@
     </div>
 
     <div class="hero-content">
-      <div class="hero-invitation-line">YOU ARE CORDIALLY INVITED</div>
       <div class="hero-flourish" aria-hidden="true"><span></span><i></i><span></span></div>
       <div class="hero-monogram">H &amp; T</div>
       <h1 class="hero-names">Hashini <span class="hero-amp">&amp;</span> Thilanga</h1>
       <div class="hero-family-line">Together with their families,</div>
       <div class="hero-detail-stem" aria-hidden="true"></div>
-      <div class="hero-date">26 NOVEMBER 2026</div>
-      <div class="hero-venue">HOTEL GRAND PALACE <span>·</span> HIKKADUWA</div>
     </div>
   </section>
 
@@ -1811,6 +1806,14 @@
           <source src="hashini-thilanga-final-video-2.mp4" type="video/mp4">
         </video>
         <div class="final-video-veil" aria-hidden="true"></div>
+        <div class="final-signature" id="finalSignature">
+          <span class="final-signature-text">Crafted by Nevinda Rushantha</span>
+          <a class="final-signature-whatsapp" href="https://wa.me/94766527700" target="_blank" rel="noopener noreferrer" aria-label="Contact Nevinda Rushantha on WhatsApp">
+            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.14c-.24.68-1.19 1.25-1.94 1.4-.52.11-1.2.19-3.48-.75-2.92-1.21-4.8-4.17-4.94-4.36-.14-.19-1.18-1.57-1.18-3 0-1.43.75-2.13 1.02-2.42.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2.01.89 2.16.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.72 1.19 1.55 1.93 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.63-.14.26.1 1.63.77 1.91.91.28.14.47.21.54.33.07.12.07.68-.17 1.36Z"/>
+            </svg>
+          </a>
+        </div>
       </section>
 
       <!-- further post-hero sections (gallery) continue below,
@@ -2085,10 +2088,19 @@
         'UID:hashini-thilanga-wedding-20261126@invitation',
         'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
         'DTSTART:20261126T033000Z',
-        'DTEND:20261126T113000Z',
         'SUMMARY:Hashini & Thilanga\'s Wedding',
         'DESCRIPTION:Poruwa Ceremony at 09:35 AM. Join us as we celebrate!',
         'LOCATION:Hotel Grand Palace\\, Hikkaduwa',
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Hashini & Thilanga Wedding Reminder',
+        'TRIGGER:-P7D',
+        'END:VALARM',
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Hashini & Thilanga Wedding Reminder',
+        'TRIGGER:-P1D',
+        'END:VALARM',
         'END:VEVENT',
         'END:VCALENDAR'
       ].join('\r\n');
@@ -2229,6 +2241,7 @@
   const finalSection = document.getElementById('finalVideoSection');
   const finalVideo1 = document.getElementById('finalVideo1');
   const finalVideo2 = document.getElementById('finalVideo2');
+  const finalSignature = document.getElementById('finalSignature');
 
   if (finalSection && finalVideo1 && finalVideo2){
     const finalVideos = [finalVideo1, finalVideo2];
@@ -2275,6 +2288,7 @@
       const finalObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           finalVisible = entry.isIntersecting;
+          if (finalSignature) finalSignature.classList.toggle('is-visible', finalVisible);
           const current = finalVideos[finalIndex];
           if (finalVisible) finalPlay(current);   // first time: Video 1 from 0; later: resumes in place
           else current.pause();
@@ -2284,6 +2298,7 @@
     } else {
       // no IntersectionObserver support — fall back to a single static start
       finalVisible = true;
+      if (finalSignature) finalSignature.classList.add('is-visible');
       finalPlay(finalVideos[finalIndex]);
     }
   }
