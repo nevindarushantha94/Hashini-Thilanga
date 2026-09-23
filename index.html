@@ -307,25 +307,64 @@
     animation-fill-mode: both;
   }
 
+  /* ---- premium botanical ornament — fine champagne-gold line art that
+     draws from the center outward, symmetrically, with two small leaf
+     accents per side and a very subtle light sweep to finish. Replaces
+     the previous plain line+leaf divider. ---- */
   .hero-flourish{
-    display:flex; align-items:center; justify-content:center; gap:0.55rem;
-    width:min(8rem,30vw); margin-bottom:clamp(0.7rem,2.1vw,1rem);
-    opacity:0.78;
+    display:flex; align-items:center; justify-content:center;
+    width:min(15rem,58vw); margin-bottom:clamp(0.75rem,2.2vw,1.05rem);
   }
-  .hero.in-view .hero-flourish{ animation-delay:0.40s; }
-  .hero-flourish span{
-    width:2.9rem; height:1px; background:rgba(165,121,59,0.58); display:block;
+  .hero.in-view .hero-flourish{ animation-delay:0s; }
+  .hero-flourish-svg{
+    width:100%; height:auto; overflow:visible;
+    filter: drop-shadow(0 1px 5px rgba(246,241,231,0.45));
   }
-  .hero-flourish i{
-    width:0.58rem; height:0.9rem; display:block; position:relative; transform:rotate(-25deg);
+  .hf-line{
+    fill:none; stroke:#B8863F; stroke-width:0.55; stroke-linecap:round;
+    stroke-dasharray:1; stroke-dashoffset:1;
   }
-  .hero-flourish i::before{
-    content:""; position:absolute; width:0.38rem; height:0.62rem; left:0.08rem; top:0.1rem;
-    border-radius:100% 0 100% 0; background:rgba(165,121,59,0.72);
+  .hf-leaf{
+    fill:#C79A52; opacity:0; transform-box:fill-box; transform-origin:center;
+    transform:scale(0.7);
   }
-  .hero-flourish i::after{
-    content:""; position:absolute; width:1px; height:0.95rem; left:0.3rem; top:0;
-    background:rgba(165,121,59,0.68); transform:rotate(25deg); transform-origin:top;
+  .hf-center{
+    fill:#C79A52; opacity:0; transform-box:fill-box; transform-origin:center;
+    transform:scale(0.4);
+  }
+  .hf-sweep{ opacity:0; mix-blend-mode:overlay; }
+
+  @keyframes hfDraw{ to{ stroke-dashoffset:0; } }
+  @keyframes hfLeafIn{
+    from{ opacity:0; transform:scale(0.7); }
+    to{ opacity:0.92; transform:scale(1); }
+  }
+  @keyframes hfCenterIn{
+    from{ opacity:0; transform:scale(0.4); }
+    to{ opacity:1; transform:scale(1); }
+  }
+  @keyframes hfSweep{
+    0%{ opacity:0; transform:translateX(-55%); }
+    45%{ opacity:0.55; }
+    100%{ opacity:0; transform:translateX(55%); }
+  }
+  .hero.in-view .hf-center{
+    animation: hfCenterIn 0.5s cubic-bezier(0.19,1,0.22,1) 0s both;
+  }
+  .hero.in-view .hf-line{
+    animation: hfDraw 1.05s cubic-bezier(0.4,0,0.2,1) 0.05s both;
+  }
+  .hero.in-view .hf-leaf-r1,
+  .hero.in-view .hf-leaf-l1{
+    animation: hfLeafIn 0.55s cubic-bezier(0.19,1,0.22,1) 0.55s both;
+  }
+  .hero.in-view .hf-leaf-r2,
+  .hero.in-view .hf-leaf-l2{
+    animation: hfLeafIn 0.55s cubic-bezier(0.19,1,0.22,1) 0.78s both;
+  }
+  .hero.in-view .hf-sweep{
+    animation: hfSweep 0.95s ease-out 1.05s both;
+    transform-box: fill-box; transform-origin:center;
   }
 
   .hero-family-line{
@@ -334,12 +373,17 @@
     margin-top:clamp(0.8rem,2.5vw,1.2rem);
     text-shadow:0 1px 8px rgba(246,241,231,0.58);
   }
-  .hero.in-view .hero-family-line{ animation-delay:1.20s; }
+  /* softer, slower settle than the rest of the staged reveal */
+  .hero.in-view .hero-family-line{
+    animation-duration: 1.15s;
+    animation-timing-function: ease-out;
+    animation-delay:1.65s;
+  }
   .hero-detail-stem{
     width:1px; height:1.55rem; background:rgba(165,121,59,0.68);
     margin:clamp(0.75rem,2.3vw,1.05rem) 0 clamp(0.8rem,2.5vw,1.2rem);
   }
-  .hero.in-view .hero-detail-stem{ animation-delay:1.45s; }
+  .hero.in-view .hero-detail-stem{ animation-delay:1.95s; }
 
   .hero-monogram{
     font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.85rem,2.2vw,1rem);
@@ -347,7 +391,7 @@
     margin-bottom: clamp(0.7rem,2vw,1.1rem);
     text-shadow: 0 1px 6px rgba(246,241,231,0.6);
   }
-  .hero.in-view .hero-monogram{ animation-delay:0.60s; }
+  .hero.in-view .hero-monogram{ animation-delay:0.75s; }
 
   .hero-names{
     margin:0; font-weight:600; letter-spacing:0.06em; text-transform: uppercase;
@@ -366,8 +410,8 @@
   }
   .hero.in-view .hero-names{
     animation:
-      heroNamesReveal 0.95s cubic-bezier(0.19,1,0.22,1) 0.85s both,
-      heroSweep 12s ease-in-out 2s infinite alternate;
+      heroNamesReveal 0.95s cubic-bezier(0.19,1,0.22,1) 1.15s both,
+      heroSweep 12s ease-in-out 2.3s infinite alternate;
   }
   @keyframes heroSweep{ 0%{ background-position:130% 0; } 100%{ background-position:-30% 0; } }
 
@@ -417,6 +461,13 @@
     .hero.in-view .hero-names{ animation: heroGentleFade 0.5s ease-out 0.70s both; }
     .hero.in-view .hero-family-line{ animation-delay:0.95s; }
     .hero.in-view .hero-detail-stem{ animation-delay:1.15s; }
+
+    /* botanical ornament: no line-draw / leaf-pop / light sweep — just
+       settle into its final state along with the container's own fade */
+    .hf-line{ stroke-dashoffset:0; animation:none; }
+    .hf-leaf{ opacity:0.92; transform:scale(1); animation:none; }
+    .hf-center{ opacity:1; transform:scale(1); animation:none; }
+    .hf-sweep{ opacity:0; animation:none; }
   }
 
   /* ============================================================
@@ -1340,8 +1391,12 @@
     opacity:0;
     transition: opacity 1.1s ease;
     will-change:opacity;
+    text-decoration:none;
+    background:none;
+    border:none;
+    cursor:pointer;
   }
-  .final-signature.is-visible{ opacity:0.5; }
+  .final-signature.is-visible{ opacity:0.5; pointer-events:auto; }
   .final-signature-text{
     font-family:'Cormorant Garamond', serif;
     font-size: clamp(0.58rem, 1.6vw, 0.7rem);
@@ -1349,9 +1404,9 @@
     text-transform:uppercase;
     color:#F6F1E7;
     overflow:hidden; text-overflow:ellipsis;
+    text-decoration:none;
   }
   .final-signature-whatsapp{
-    pointer-events:auto;
     display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center;
     color:#F6F1E7; line-height:0;
   }
@@ -1489,7 +1544,25 @@
     </div>
 
     <div class="hero-content">
-      <div class="hero-flourish" aria-hidden="true"><span></span><i></i><span></span></div>
+      <div class="hero-flourish" aria-hidden="true">
+        <svg class="hero-flourish-svg" viewBox="0 0 320 34" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <path class="hf-line hf-line-r" pathLength="1" d="M160,17 C182,17 190,8.5 209,11 C227,13.3 233,20 254,17"/>
+          <path class="hf-line hf-line-l" pathLength="1" d="M160,17 C138,17 130,8.5 111,11 C93,13.3 87,20 66,17"/>
+          <path class="hf-leaf hf-leaf-r1" d="M191,10.2 C194.4,6.6 198.6,7.3 199.6,10.8 C196.5,12.5 192.3,12.2 191,10.2 Z"/>
+          <path class="hf-leaf hf-leaf-r2" d="M226,15.4 C229.2,11.9 233.4,12.9 234,16.4 C230.9,18 226.9,17.4 226,15.4 Z"/>
+          <path class="hf-leaf hf-leaf-l1" d="M129,10.2 C125.6,6.6 121.4,7.3 120.4,10.8 C123.5,12.5 127.7,12.2 129,10.2 Z"/>
+          <path class="hf-leaf hf-leaf-l2" d="M94,15.4 C90.8,11.9 86.6,12.9 86,16.4 C89.1,18 93.1,17.4 94,15.4 Z"/>
+          <path class="hf-center" d="M160,11.5 L165,17 L160,22.5 L155,17 Z"/>
+          <rect class="hf-sweep" x="0" y="0" width="320" height="34" fill="url(#hfSweepGrad)"/>
+          <defs>
+            <linearGradient id="hfSweepGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#F6E6C8" stop-opacity="0"/>
+              <stop offset="48%" stop-color="#F6E6C8" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#F6E6C8" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
       <div class="hero-monogram">H &amp; T</div>
       <h1 class="hero-names">Hashini <span class="hero-amp">&amp;</span> Thilanga</h1>
       <div class="hero-family-line">Together with their families,</div>
@@ -1806,14 +1879,14 @@
           <source src="hashini-thilanga-final-video-2.mp4" type="video/mp4">
         </video>
         <div class="final-video-veil" aria-hidden="true"></div>
-        <div class="final-signature" id="finalSignature">
+        <a class="final-signature" id="finalSignature" href="https://wa.me/94766527700" target="_blank" rel="noopener noreferrer" aria-label="Contact Nevinda Rushantha on WhatsApp">
           <span class="final-signature-text">Crafted by Nevinda Rushantha</span>
-          <a class="final-signature-whatsapp" href="https://wa.me/94766527700" target="_blank" rel="noopener noreferrer" aria-label="Contact Nevinda Rushantha on WhatsApp">
+          <span class="final-signature-whatsapp">
             <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
               <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.14c-.24.68-1.19 1.25-1.94 1.4-.52.11-1.2.19-3.48-.75-2.92-1.21-4.8-4.17-4.94-4.36-.14-.19-1.18-1.57-1.18-3 0-1.43.75-2.13 1.02-2.42.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2.01.89 2.16.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.72 1.19 1.55 1.93 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.63-.14.26.1 1.63.77 1.91.91.28.14.47.21.54.33.07.12.07.68-.17 1.36Z"/>
             </svg>
-          </a>
-        </div>
+          </span>
+        </a>
       </section>
 
       <!-- further post-hero sections (gallery) continue below,
@@ -1841,6 +1914,22 @@
   // scroll, resize, orientation change, or visibility change. As a last
   // line of defence, explicitly hold the final frame when it ends.
   heroVideo.addEventListener('ended', () => { heroVideo.pause(); });
+
+  // ---- Hero text/ornament reveal, timed strictly from VIDEO START ----
+  // The hero-heart video's play() call is untouched (still fired 150ms
+  // after handoff, below). Separately — and without affecting playback
+  // in any way — we listen for the browser's own 'playing' event (the
+  // moment frames actually start rendering) and, exactly 2.0s after
+  // that, add .in-view to reveal the ornament/monogram/names/family
+  // line. This reuses the existing .hero.in-view staged-reveal system;
+  // it does not pause, delay, restart, or replace the video.
+  let heroTextStarted = false;
+  function beginHeroTextReveal(){
+    if (heroTextStarted) return;
+    heroTextStarted = true;
+    setTimeout(() => { hero.classList.add('in-view'); }, 2000);
+  }
+  heroVideo.addEventListener('playing', beginHeroTextReveal, { once:true });
 
   // ---- Persistent wedding soundtrack ----
   // ONE <audio> element for the whole site. It is started exactly once,
@@ -1890,11 +1979,19 @@
     // 0.0s — the opening film has finished; a soft ivory bloom lifts the scene
     stage.classList.add('closing');
 
-    // ~0.15s — the Hero film, already preloaded, starts underneath the bloom
+    // ~0.15s — the Hero film, already preloaded, starts underneath the bloom.
+    // The text/ornament reveal is NOT triggered here — it is scheduled
+    // separately, 2.0s after the browser reports the video is actually
+    // playing (see beginHeroTextReveal above), so the video itself is
+    // never gated on or altered by the text timing.
     setTimeout(() => {
       const p = heroVideo.play();
       if (p && p.catch) p.catch(() => {});
-      hero.classList.add('in-view');
+      // Safety net: if the 'playing' event is ever missed (e.g. a browser
+      // that fires it before the listener attaches), fall back to the
+      // same play() call as the timing reference — still 2.0s from the
+      // moment we asked the video to start, never sooner.
+      if (p && p.then) p.then(beginHeroTextReveal).catch(() => {});
     }, 150);
 
     // ~0.45s — the opening layer dissolves away through the light
