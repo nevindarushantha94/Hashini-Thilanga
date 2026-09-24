@@ -1001,68 +1001,118 @@
      ============================================================ */
 
   .wedding-details{
-    position:relative; z-index:1;
-    padding: clamp(2.4rem,8vh,4rem) 8vw clamp(3.4rem,9vh,5rem);
+    position:relative; z-index:1; isolation:isolate;
+    padding: clamp(3rem,9vh,4.6rem) 8vw clamp(3.4rem,9vh,5rem);
     text-align:center;
     display:flex; flex-direction:column; align-items:center;
   }
 
-  /* entrance sequence — shared keyframes, per-element delay.
-     0.00s the top ornament (section atmosphere) is the divider above. */
-  .wedding-details.in-view .details-copy > .section-eyebrow,
-  .wedding-details.in-view .details-copy > .section-heading{ animation-delay:0.15s; }
-  .wedding-details.in-view .details-date{ animation-delay:0.40s; }
-  .wedding-details.in-view .details-day,
-  .wedding-details.in-view .details-time{ animation-delay:0.65s; }
-  .wedding-details.in-view .details-venue{ animation-delay:0.90s; }
-  .wedding-details.in-view .details-poruwa{ animation-delay:1.20s; }
-  .wedding-details.in-view .countdown{ animation-delay:1.50s; }
-  .wedding-details.in-view .details-actions{ animation-delay:1.80s; }
-
-  .details-date{
-    margin: clamp(1.2rem,3.6vw,1.6rem) 0 0;
-    font-family:'Playfair Display', serif; font-weight:600; color: var(--ink);
-    font-size: clamp(1.5rem,5.4vw,2rem); letter-spacing:0.02em;
+  /* subtle warm-ivory "page" wash + fine paper grain so this spread reads
+     as its own leaf of the invitation rather than a plain content block.
+     Same dot-grain technique already used by .hero-grain / .post-hero-grain
+     elsewhere on the page — no new visual system introduced. */
+  .wedding-details::before{
+    content:""; position:absolute; inset:0; z-index:-1;
+    background: var(--ivory-2); opacity:0.4;
   }
+  .wedding-details::after{
+    content:""; position:absolute; inset:0; z-index:-1;
+    opacity:0.4; mix-blend-mode: multiply;
+    background-image: radial-gradient(rgba(36,28,19,0.05) 1px, transparent 1px);
+    background-size: 2.6px 2.6px;
+  }
+
+  /* ---- the date, as a printed-invitation focal mark: a large "26",
+     a thin gold stem, then NOVEMBER (wide-set) and a smaller 2026 ---- */
+  .details-date-mark{
+    margin: clamp(1.5rem,4.4vw,2.1rem) 0 0;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .details-date-big{
+    font-family:'Playfair Display', serif; font-weight:700; color: var(--ink);
+    font-size: clamp(3.8rem,17vw,6.4rem); line-height:0.9; letter-spacing:0.01em;
+  }
+  .details-date-stem{
+    width:1px; height: clamp(20px,4.2vh,30px);
+    margin: clamp(0.55rem,1.6vh,0.8rem) 0;
+    background: linear-gradient(to bottom, var(--gold-line), rgba(165,121,59,0));
+  }
+  .details-date-month{
+    font-family:'Jost', sans-serif; font-weight:400; text-transform:uppercase;
+    letter-spacing:0.5em; padding-left:0.5em; color: var(--ink-soft);
+    font-size: clamp(0.82rem,2.4vw,1rem);
+  }
+  .details-date-year{
+    margin-top: clamp(0.4rem,1.4vw,0.55rem);
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:400;
+    color: var(--gold); font-size: clamp(0.95rem,2.6vw,1.1rem); letter-spacing:0.08em;
+  }
+
   .details-day{
-    margin: clamp(0.3rem,1.2vw,0.45rem) 0 0; font-style:italic; color: var(--ink-soft);
+    margin: clamp(0.9rem,2.6vw,1.2rem) 0 0; font-style:italic; color: var(--ink-soft);
     font-size: clamp(1rem,2.8vw,1.15rem);
   }
-  .details-time{
-    margin: clamp(0.3rem,1.2vw,0.45rem) 0 0;
-    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.18em; padding-left:0.18em;
-    color: var(--gold); font-size: clamp(0.78rem,2.2vw,0.9rem);
+
+  /* ---- ceremony + Poruwa, as an editorial pairing joined by a single
+     thin gold hairline — never boxed, never buttoned ---- */
+  .details-schedule{
+    display:flex; align-items:center; justify-content:center;
+    gap: clamp(1.4rem,5vw,2.6rem);
+    margin: clamp(2rem,5.6vh,2.8rem) 0 0;
   }
+  .details-schedule-item{ display:flex; flex-direction:column; align-items:center; }
+  .details-schedule-time{
+    font-family:'Playfair Display', serif; font-weight:600; color: var(--ink);
+    font-size: clamp(1.05rem,3.2vw,1.25rem); letter-spacing:0.01em;
+  }
+  .details-schedule-label{
+    margin-top: clamp(0.35rem,1.2vw,0.5rem);
+    font-family:'Jost', sans-serif; font-weight:400; text-transform:uppercase;
+    letter-spacing:0.28em; padding-left:0.28em; color: var(--gold);
+    font-size: clamp(0.64rem,1.7vw,0.72rem);
+  }
+  .details-schedule-divider{
+    width:1px; align-self:stretch; flex:none;
+    background: linear-gradient(to bottom, transparent, var(--gold-line) 30%, var(--gold-line) 70%, transparent);
+  }
+
   .details-venue{
-    margin: clamp(1.4rem,3.6vw,1.8rem) 0 0; line-height:1.5;
+    margin: clamp(2rem,5vw,2.6rem) 0 0; line-height:1.5;
     font-family:'Jost', sans-serif; font-weight:300; letter-spacing:0.14em;
     color: var(--ink); font-size: clamp(0.92rem,2.6vw,1.05rem);
   }
   .details-venue strong{ display:block; font-weight:500; letter-spacing:0.2em; margin-bottom:0.3rem; }
-  .details-poruwa{
-    margin: clamp(0.6rem,2vw,0.85rem) 0 0;
-    font-family:'Jost', sans-serif; font-weight:300; letter-spacing:0.16em;
-    color: var(--ink-soft); font-size: clamp(0.72rem,2vw,0.82rem);
-  }
 
   .countdown{
-    display:flex; align-items:flex-start; justify-content:center;
-    gap: clamp(1.2rem,5vw,2.6rem);
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    gap: clamp(1rem,4vw,1.8rem);
     margin: clamp(2.2rem,6vh,3rem) 0 0;
+    padding-top: clamp(1.3rem,3.4vh,1.7rem);
+  }
+  .countdown::before{
+    content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width: min(42vw,160px); height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
   }
   .countdown[hidden]{ display:none; }
 
-  .countdown-item{ display:flex; flex-direction:column; align-items:center; min-width: 2.4em; }
+  .countdown-item{ position:relative; display:flex; flex-direction:column; align-items:center; min-width: 2.2em; }
+  .countdown-item + .countdown-item::before{
+    content:""; position:absolute; left: calc(-1 * clamp(0.5rem,2vw,0.9rem)); top:0.15em; bottom:0.55em;
+    width:1px; background: var(--gold-line); opacity:0.5;
+  }
   .countdown-number{
     font-family:'Playfair Display', serif; font-weight:600; color: var(--ink);
-    font-size: clamp(1.7rem,7vw,2.5rem); line-height:1;
+    font-size: clamp(1.5rem,6vw,2.15rem); line-height:1;
     transition: opacity 0.3s ease;
     font-variant-numeric: tabular-nums;
   }
   .countdown-label{
-    margin-top: 0.4em;
-    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.22em; padding-left:0.22em;
-    color: var(--gold); font-size: clamp(0.6rem,1.8vw,0.68rem);
+    margin-top: 0.45em;
+    font-family:'Jost', sans-serif; font-weight:300; font-style:italic;
+    letter-spacing:0.16em; padding-left:0.16em;
+    color: var(--ink-soft); font-size: clamp(0.62rem,1.7vw,0.7rem);
   }
 
   .countdown-arrived{
@@ -1098,12 +1148,16 @@
     padding-bottom: 0.3em; transition: border-color 0.3s ease, opacity 0.3s ease;
   }
   .location-cta:hover{ opacity:0.75; border-color: var(--gold); }
+  .location-cta:active{ opacity:0.65; }
   .location-cta span{ display:inline-block; margin-left:0.4em; transition: transform 0.3s ease; }
-  .location-cta:hover span, .location-cta:focus-visible span{ transform: translateX(3px); }
+  .location-cta:hover span, .location-cta:focus-visible span, .location-cta:active span{ transform: translateX(3px); }
 
   @media (min-width:900px){
     .wedding-details{ padding: clamp(3rem,10vh,5rem) 10vw clamp(4rem,11vh,6rem); }
-    .countdown{ gap: clamp(2rem,4vw,3.4rem); }
+    .details-date-big{ font-size: clamp(5.4rem,7vw,7.4rem); }
+    .details-schedule{ gap: clamp(2.4rem,5vw,4rem); }
+    .countdown{ gap: clamp(2rem,4vw,3rem); }
+    .countdown-item + .countdown-item::before{ left: calc(-1 * clamp(1rem,2vw,1.5rem)); }
     .details-actions{ flex-direction:row; gap: clamp(1.6rem,3vw,2.4rem); }
   }
 
@@ -1112,17 +1166,31 @@
      ============================================================ */
 
   .location{
-    position:relative; z-index:1;
+    position:relative; z-index:1; isolation:isolate;
     padding: clamp(3rem,9vh,4.6rem) 8vw clamp(3.4rem,10vh,5rem);
     text-align:center;
     display:flex; flex-direction:column; align-items:center;
   }
 
+  /* subtle warm-ivory "page" wash + fine paper grain — same technique
+     used in Wedding Details, so this reads as another leaf of the same
+     printed invitation rather than a generic content block. */
+  .location::before{
+    content:""; position:absolute; inset:0; z-index:-1;
+    background: var(--ivory-2); opacity:0.4;
+  }
+  .location::after{
+    content:""; position:absolute; inset:0; z-index:-1;
+    opacity:0.4; mix-blend-mode: multiply;
+    background-image: radial-gradient(rgba(36,28,19,0.05) 1px, transparent 1px);
+    background-size: 2.6px 2.6px;
+  }
+
   /* entrance sequence — shared keyframes, per-element delay.
      0.00s the top ornament (section atmosphere) is the divider above. */
   .location.in-view .location-copy > .section-eyebrow{ animation-delay:0.15s; }
-  .location.in-view .location-venue{ animation-delay:0.45s; }
-  .location.in-view .location-place{ animation-delay:0.75s; }
+  .location.in-view .location-arrival-stem{ animation-delay:0.35s; }
+  .location.in-view .location-frame{ animation-delay:0.65s; }
   .location.in-view .location-quote{ animation-delay:1.05s; }
   .location.in-view .location-actions{ animation-delay:1.45s; }
 
@@ -1131,21 +1199,65 @@
     letter-spacing: 0.16em; padding-left:0.16em;
   }
 
+  /* ---- arrival cue: a thin gold stem with a single soft spark that
+     travels down it once, toward the venue frame below. Extremely
+     subtle — plays once, no loop. ---- */
+  .location-arrival-stem{
+    position:relative; display:block; overflow:visible;
+    width:1px; height: clamp(22px,4.6vh,32px);
+    margin: clamp(0.9rem,2.6vw,1.2rem) auto 0;
+    background: linear-gradient(to bottom, var(--gold-line), rgba(165,121,59,0));
+  }
+  .location-arrival-stem::after{
+    content:""; position:absolute; left:50%; top:-3px; width:4px; height:4px;
+    transform: translateX(-50%); border-radius:50%;
+    background: radial-gradient(circle, #FFF7E2 0%, var(--gold) 70%);
+    box-shadow: 0 0 6px rgba(240,217,160,0.7);
+    opacity:0;
+  }
+  .location.in-view .location-arrival-stem::after{
+    animation: arrivalTravel 1.3s ease-in-out 1.05s 1 both;
+  }
+  @keyframes arrivalTravel{
+    0%   { top:-3px; opacity:0; }
+    18%  { opacity:0.9; }
+    82%  { opacity:0.9; }
+    100% { top: calc(100% - 3px); opacity:0; }
+  }
+
+  /* ---- open architectural corner-frame around the venue mark — never a
+     filled card, just four thin gold corner marks in editorial proportion ---- */
+  .location-frame{
+    position:relative;
+    margin: clamp(0.4rem,1.4vw,0.6rem) auto 0;
+    padding: clamp(1.5rem,5.2vw,2.3rem) clamp(1.8rem,7.5vw,3.4rem);
+    display:inline-flex; flex-direction:column; align-items:center;
+  }
+  .location-frame-corner{
+    position:absolute; width: clamp(15px,4vw,20px); height: clamp(15px,4vw,20px);
+    border: 1px solid var(--gold-line);
+  }
+  .location-frame-corner.tl{ top:0; left:0; border-right:none; border-bottom:none; }
+  .location-frame-corner.tr{ top:0; right:0; border-left:none; border-bottom:none; }
+  .location-frame-corner.bl{ bottom:0; left:0; border-right:none; border-top:none; }
+  .location-frame-corner.br{ bottom:0; right:0; border-left:none; border-top:none; }
+
   .location-venue{
-    margin: clamp(0.9rem,2.6vw,1.3rem) 0 0;
+    margin:0;
     font-family:'Playfair Display', serif; font-weight:600; font-style:normal;
-    font-size: clamp(2.15rem,8.6vw,3.4rem); line-height:1.12; color: var(--ink);
-    letter-spacing:0.01em;
+    text-transform:uppercase;
+    font-size: clamp(2rem,8.4vw,3.2rem); line-height:1.14; color: var(--ink);
+    letter-spacing:0.03em;
   }
 
   .location-place{
-    margin: clamp(0.35rem,1.4vw,0.55rem) 0 0;
-    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.3em; padding-left:0.3em;
-    font-size: clamp(0.78rem,2.2vw,0.92rem); color: var(--gold);
+    margin: clamp(0.45rem,1.6vw,0.65rem) 0 0;
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:0.38em; padding-left:0.38em;
+    font-size: clamp(0.76rem,2.1vw,0.9rem); color: var(--gold);
   }
 
   .location-quote{
-    margin: clamp(1.7rem,4.6vh,2.3rem) auto 0; max-width: 30ch;
+    margin: clamp(1.8rem,4.8vh,2.4rem) auto 0; max-width: 30ch;
     font-style:italic; font-weight:400; color: var(--ink-soft);
     font-size: clamp(1rem,2.9vw,1.22rem); line-height:1.65;
   }
@@ -1156,7 +1268,8 @@
 
   @media (min-width:900px){
     .location{ padding: clamp(4rem,11vh,6rem) 10vw; }
-    .location-venue{ font-size: clamp(2.6rem,4.4vw,3.8rem); }
+    .location-venue{ font-size: clamp(2.5rem,4.2vw,3.6rem); }
+    .location-frame{ padding: clamp(1.8rem,3.4vw,2.4rem) clamp(2.6rem,5vw,3.8rem); }
     .location-quote{ font-size: 1.25rem; }
   }
 
@@ -1362,20 +1475,20 @@
     /* Wedding Details */
     .wedding-details.in-view .details-copy > .section-eyebrow,
     .wedding-details.in-view .details-copy > .section-heading{ animation-delay:0.10s; }
-    .wedding-details.in-view .details-date{ animation-delay:0.25s; }
-    .wedding-details.in-view .details-day,
-    .wedding-details.in-view .details-time{ animation-delay:0.40s; }
-    .wedding-details.in-view .details-venue{ animation-delay:0.55s; }
-    .wedding-details.in-view .details-poruwa{ animation-delay:0.70s; }
+    .wedding-details.in-view .details-date-mark{ animation-delay:0.25s; }
+    .wedding-details.in-view .details-day{ animation-delay:0.40s; }
+    .wedding-details.in-view .details-schedule{ animation-delay:0.55s; }
+    .wedding-details.in-view .details-venue{ animation-delay:0.70s; }
     .wedding-details.in-view .countdown{ animation-delay:0.85s; }
     .wedding-details.in-view .details-actions{ animation-delay:1.00s; }
 
     /* Location */
     .location.in-view .location-copy > .section-eyebrow{ animation-delay:0.10s; }
-    .location.in-view .location-venue{ animation-delay:0.25s; }
-    .location.in-view .location-place{ animation-delay:0.40s; }
+    .location.in-view .location-arrival-stem{ animation-delay:0.20s; }
+    .location.in-view .location-frame{ animation-delay:0.35s; }
     .location.in-view .location-quote{ animation-delay:0.55s; }
     .location.in-view .location-actions{ animation-delay:0.75s; }
+    .location-arrival-stem::after{ animation:none !important; opacity:0; }
 
     /* RSVP */
     .rsvp.in-view .rsvp-sub{ animation-delay:0.15s; }
@@ -1762,12 +1875,27 @@
           <span class="section-eyebrow">THE DAY WE SAY</span>
           <h2 class="section-heading">&ldquo;I Do&rdquo;</h2>
 
-          <p class="details-date">26 November 2026</p>
+          <div class="details-date-mark">
+            <span class="details-date-big">26</span>
+            <span class="details-date-stem" aria-hidden="true"></span>
+            <span class="details-date-month">November</span>
+            <span class="details-date-year">2026</span>
+          </div>
           <p class="details-day">Thursday</p>
-          <p class="details-time">09:00 AM ONWARD</p>
+
+          <div class="details-schedule">
+            <div class="details-schedule-item">
+              <span class="details-schedule-time">09:00 AM ONWARD</span>
+              <span class="details-schedule-label">Wedding Ceremony</span>
+            </div>
+            <span class="details-schedule-divider" aria-hidden="true"></span>
+            <div class="details-schedule-item">
+              <span class="details-schedule-time">09:35 AM</span>
+              <span class="details-schedule-label">Poruwa</span>
+            </div>
+          </div>
 
           <p class="details-venue"><strong>Hotel Grand Palace</strong>Hikkaduwa</p>
-          <p class="details-poruwa">PORUWA CEREMONY &middot; 09:35 AM</p>
         </div>
 
         <div class="countdown" id="countdown" aria-label="Countdown to the wedding">
@@ -1819,8 +1947,15 @@
 
         <div class="location-copy" id="locationCopy">
           <span class="section-eyebrow">THE PLACE THAT WILL HOLD THIS MOMENT</span>
-          <h2 class="location-venue">Hotel Grand Palace</h2>
-          <p class="location-place">Hikkaduwa</p>
+          <span class="location-arrival-stem" aria-hidden="true"></span>
+          <div class="location-frame">
+            <span class="location-frame-corner tl" aria-hidden="true"></span>
+            <span class="location-frame-corner tr" aria-hidden="true"></span>
+            <span class="location-frame-corner bl" aria-hidden="true"></span>
+            <span class="location-frame-corner br" aria-hidden="true"></span>
+            <h2 class="location-venue">Hotel Grand Palace</h2>
+            <p class="location-place">Hikkaduwa</p>
+          </div>
           <p class="location-quote">&ldquo;Where our families will gather,<br>and a new chapter will begin.&rdquo;</p>
         </div>
 
