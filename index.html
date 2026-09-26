@@ -260,7 +260,6 @@
 
   @media (max-width:480px){
     .hero-content{ padding-left:5vw; padding-right:5vw; padding-bottom:calc(5.2vh + var(--safe-b)); }
-    .hero-flourish{ margin-bottom:0.72rem; }
     .hero-family-line{ letter-spacing:0.045em; }
   }
 
@@ -307,66 +306,6 @@
     animation-fill-mode: both;
   }
 
-  /* ---- premium botanical ornament — fine champagne-gold line art that
-     draws from the center outward, symmetrically, with two small leaf
-     accents per side and a very subtle light sweep to finish. Replaces
-     the previous plain line+leaf divider. ---- */
-  .hero-flourish{
-    display:flex; align-items:center; justify-content:center;
-    width:min(15rem,58vw); margin-bottom:clamp(0.75rem,2.2vw,1.05rem);
-  }
-  .hero.in-view .hero-flourish{ animation-delay:0s; }
-  .hero-flourish-svg{
-    width:100%; height:auto; overflow:visible;
-    filter: drop-shadow(0 1px 5px rgba(246,241,231,0.45));
-  }
-  .hf-line{
-    fill:none; stroke:#B8863F; stroke-width:0.55; stroke-linecap:round;
-    stroke-dasharray:1; stroke-dashoffset:1;
-  }
-  .hf-leaf{
-    fill:#C79A52; opacity:0; transform-box:fill-box; transform-origin:center;
-    transform:scale(0.7);
-  }
-  .hf-center{
-    fill:#C79A52; opacity:0; transform-box:fill-box; transform-origin:center;
-    transform:scale(0.4);
-  }
-  .hf-sweep{ opacity:0; mix-blend-mode:overlay; }
-
-  @keyframes hfDraw{ to{ stroke-dashoffset:0; } }
-  @keyframes hfLeafIn{
-    from{ opacity:0; transform:scale(0.7); }
-    to{ opacity:0.92; transform:scale(1); }
-  }
-  @keyframes hfCenterIn{
-    from{ opacity:0; transform:scale(0.4); }
-    to{ opacity:1; transform:scale(1); }
-  }
-  @keyframes hfSweep{
-    0%{ opacity:0; transform:translateX(-55%); }
-    45%{ opacity:0.55; }
-    100%{ opacity:0; transform:translateX(55%); }
-  }
-  .hero.in-view .hf-center{
-    animation: hfCenterIn 0.5s cubic-bezier(0.19,1,0.22,1) 0s both;
-  }
-  .hero.in-view .hf-line{
-    animation: hfDraw 1.05s cubic-bezier(0.4,0,0.2,1) 0.05s both;
-  }
-  .hero.in-view .hf-leaf-r1,
-  .hero.in-view .hf-leaf-l1{
-    animation: hfLeafIn 0.55s cubic-bezier(0.19,1,0.22,1) 0.55s both;
-  }
-  .hero.in-view .hf-leaf-r2,
-  .hero.in-view .hf-leaf-l2{
-    animation: hfLeafIn 0.55s cubic-bezier(0.19,1,0.22,1) 0.78s both;
-  }
-  .hero.in-view .hf-sweep{
-    animation: hfSweep 0.95s ease-out 1.05s both;
-    transform-box: fill-box; transform-origin:center;
-  }
-
   .hero-family-line{
     font-family:'Cormorant Garamond', serif; font-size:clamp(0.95rem,3.1vw,1.25rem);
     font-style:italic; letter-spacing:0.07em; color:var(--ink-soft);
@@ -385,13 +324,30 @@
   }
   .hero.in-view .hero-detail-stem{ animation-delay:1.95s; }
 
-  .hero-monogram{
-    font-family:'Jost', sans-serif; font-weight:400; font-size: clamp(0.85rem,2.2vw,1rem);
-    letter-spacing:0.5em; padding-left:0.5em; color: var(--gold);
-    margin-bottom: clamp(0.7rem,2vw,1.1rem);
-    text-shadow: 0 1px 6px rgba(246,241,231,0.6);
+  /* Sits in the negative space at the visual center of the hand-heart
+     shape in the hero video (measured against the source footage: the
+     opening runs roughly from the fingertip point to the thumb point,
+     centered a little below the video's midline). Positioned against
+     .hero-media (same box as the video) so it tracks the heart
+     regardless of hero-content's own bottom-anchored layout. */
+  .hero-heart-monogram{
+    position:absolute; left:50%; top:46%; z-index:1;
+    font-family:'Cormorant Garamond', serif; font-weight:400; font-style:normal;
+    font-size: clamp(0.8rem,2.4vw,1.05rem);
+    letter-spacing:0.4em; padding-left:0.4em; color: var(--gold);
+    opacity:0.88;
+    pointer-events:none;
+    transform:translate(-50%,-50%) translateY(8px) scale(0.98);
+    filter:blur(6px);
+    will-change:opacity, transform, filter;
   }
-  .hero.in-view .hero-monogram{ animation-delay:0.75s; }
+  @keyframes heartMonogramReveal{
+    from{ opacity:0; transform:translate(-50%,-50%) translateY(8px) scale(0.98); filter:blur(6px); }
+    to{ opacity:0.88; transform:translate(-50%,-50%) translateY(0) scale(1); filter:blur(0); }
+  }
+  .hero.in-view .hero-heart-monogram{
+    animation: heartMonogramReveal 0.85s cubic-bezier(0.19,1,0.22,1) 0.75s both;
+  }
 
   .hero-names{
     margin:0; font-weight:600; letter-spacing:0.06em; text-transform: uppercase;
@@ -456,18 +412,19 @@
     .hero.in-view .hero-content > *{
       animation: heroGentleFade 0.5s ease-out both;
     }
-    .hero.in-view .hero-flourish{ animation-delay:0.30s; }
-    .hero.in-view .hero-monogram{ animation-delay:0.50s; }
     .hero.in-view .hero-names{ animation: heroGentleFade 0.5s ease-out 0.70s both; }
     .hero.in-view .hero-family-line{ animation-delay:0.95s; }
     .hero.in-view .hero-detail-stem{ animation-delay:1.15s; }
 
-    /* botanical ornament: no line-draw / leaf-pop / light sweep — just
-       settle into its final state along with the container's own fade */
-    .hf-line{ stroke-dashoffset:0; animation:none; }
-    .hf-leaf{ opacity:0.92; transform:scale(1); animation:none; }
-    .hf-center{ opacity:1; transform:scale(1); animation:none; }
-    .hf-sweep{ opacity:0; animation:none; }
+    /* not a .hero-content child, so it needs its own reduced-motion
+       reset: keep the heart-centering translate, drop the motion/blur,
+       just fade in at the same stage the monogram used to. */
+    .hero-heart-monogram{
+      opacity:0; transform:translate(-50%,-50%); filter:none;
+    }
+    .hero.in-view .hero-heart-monogram{
+      animation: heroGentleFade 0.5s ease-out 0.50s both;
+    }
   }
 
   /* ============================================================
@@ -1709,29 +1666,10 @@
       </video>
       <div class="hero-overlay" aria-hidden="true"></div>
       <div class="hero-grain" aria-hidden="true"></div>
+      <div class="hero-heart-monogram">H &middot; T</div>
     </div>
 
     <div class="hero-content">
-      <div class="hero-flourish" aria-hidden="true">
-        <svg class="hero-flourish-svg" viewBox="0 0 320 34" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-          <path class="hf-line hf-line-r" pathLength="1" d="M160,17 C182,17 190,8.5 209,11 C227,13.3 233,20 254,17"/>
-          <path class="hf-line hf-line-l" pathLength="1" d="M160,17 C138,17 130,8.5 111,11 C93,13.3 87,20 66,17"/>
-          <path class="hf-leaf hf-leaf-r1" d="M191,10.2 C194.4,6.6 198.6,7.3 199.6,10.8 C196.5,12.5 192.3,12.2 191,10.2 Z"/>
-          <path class="hf-leaf hf-leaf-r2" d="M226,15.4 C229.2,11.9 233.4,12.9 234,16.4 C230.9,18 226.9,17.4 226,15.4 Z"/>
-          <path class="hf-leaf hf-leaf-l1" d="M129,10.2 C125.6,6.6 121.4,7.3 120.4,10.8 C123.5,12.5 127.7,12.2 129,10.2 Z"/>
-          <path class="hf-leaf hf-leaf-l2" d="M94,15.4 C90.8,11.9 86.6,12.9 86,16.4 C89.1,18 93.1,17.4 94,15.4 Z"/>
-          <path class="hf-center" d="M160,11.5 L165,17 L160,22.5 L155,17 Z"/>
-          <rect class="hf-sweep" x="0" y="0" width="320" height="34" fill="url(#hfSweepGrad)"/>
-          <defs>
-            <linearGradient id="hfSweepGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#F6E6C8" stop-opacity="0"/>
-              <stop offset="48%" stop-color="#F6E6C8" stop-opacity="0.85"/>
-              <stop offset="100%" stop-color="#F6E6C8" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-      <div class="hero-monogram">H &amp; T</div>
       <h1 class="hero-names">Hashini <span class="hero-amp">&amp;</span> Thilanga</h1>
       <div class="hero-family-line">Together with their families,</div>
       <div class="hero-detail-stem" aria-hidden="true"></div>
@@ -2118,7 +2056,7 @@
   // after handoff, below). Separately — and without affecting playback
   // in any way — we listen for the browser's own 'playing' event (the
   // moment frames actually start rendering) and, exactly 2.0s after
-  // that, add .in-view to reveal the ornament/monogram/names/family
+  // that, add .in-view to reveal the heart monogram/names/family
   // line. This reuses the existing .hero.in-view staged-reveal system;
   // it does not pause, delay, restart, or replace the video.
   let heroTextStarted = false;
