@@ -326,16 +326,19 @@
 
   /* Sits in the negative space at the visual center of the hand-heart
      shape in the hero video (measured against the source footage: the
-     opening runs roughly from the fingertip point to the thumb point,
-     centered a little below the video's midline). Positioned against
-     .hero-media (same box as the video) so it tracks the heart
-     regardless of hero-content's own bottom-anchored layout. */
+     opening runs roughly from the fingertip point to the thumb point).
+     Nudged above the true vertical middle so it reads clearly in the
+     open belly of the heart rather than crowding the hands. Positioned
+     against .hero-media (same box as the video) so it tracks the heart
+     regardless of hero-content's own bottom-anchored layout. Reveals
+     before the names (0.45s vs 1.15s delay). */
   .hero-heart-monogram{
-    position:absolute; left:50%; top:46%; z-index:1;
-    font-family:'Cormorant Garamond', serif; font-weight:400; font-style:normal;
-    font-size: clamp(0.8rem,2.4vw,1.05rem);
-    letter-spacing:0.4em; padding-left:0.4em; color: var(--gold);
-    opacity:0.88;
+    position:absolute; left:50%; top:42%; z-index:1;
+    font-family:'Cormorant Garamond', serif; font-weight:500; font-style:normal;
+    font-size: clamp(1.05rem,3.6vw,1.55rem);
+    letter-spacing:0.32em; padding-left:0.32em; color: var(--gold);
+    text-shadow: 0 1px 10px rgba(246,241,231,0.65), 0 0 22px rgba(246,241,231,0.35);
+    opacity:0;
     pointer-events:none;
     transform:translate(-50%,-50%) translateY(8px) scale(0.98);
     filter:blur(6px);
@@ -343,10 +346,10 @@
   }
   @keyframes heartMonogramReveal{
     from{ opacity:0; transform:translate(-50%,-50%) translateY(8px) scale(0.98); filter:blur(6px); }
-    to{ opacity:0.88; transform:translate(-50%,-50%) translateY(0) scale(1); filter:blur(0); }
+    to{ opacity:1; transform:translate(-50%,-50%) translateY(0) scale(1); filter:blur(0); }
   }
   .hero.in-view .hero-heart-monogram{
-    animation: heartMonogramReveal 0.85s cubic-bezier(0.19,1,0.22,1) 0.75s both;
+    animation: heartMonogramReveal 0.85s cubic-bezier(0.19,1,0.22,1) 0.45s both;
   }
 
   .hero-names{
@@ -423,7 +426,7 @@
       opacity:0; transform:translate(-50%,-50%); filter:none;
     }
     .hero.in-view .hero-heart-monogram{
-      animation: heroGentleFade 0.5s ease-out 0.50s both;
+      animation: heroGentleFade 0.5s ease-out 0.40s both;
     }
   }
 
