@@ -2967,7 +2967,18 @@
       // step 2 of 2 — the existing WhatsApp CTA (unchanged below)
       const { text, phone } = buildMessage(guestName, personalMsg);
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-      window.open(url, '_blank', 'noopener');
+      // Phones / tablets: hand off in the SAME tab so the wa.me universal link
+      // launches the WhatsApp app (a script-opened new tab does not).
+      // Desktop: new tab, falling back to same-tab if the popup is blocked.
+      const isTouchDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isTouchDevice){
+        window.location.href = url;
+      } else {
+        const w = window.open(url, '_blank');
+        if (w){ try { w.opener = null; } catch (err) {} }
+        else { window.location.href = url; }
+      }
     });
   }
 
