@@ -1673,21 +1673,6 @@
     #rsvp .rsvp-side[aria-checked="true"]:hover::after{ transform:scaleX(1); }
   }
 
-  /* CONFIRM — the small text control that moves from details to confirmation */
-  #rsvp .rsvp-continue{
-    display:inline-flex; align-items:center; gap:.5em;
-    font-family:'Jost', sans-serif; font-weight:400; text-transform:uppercase;
-    font-size: clamp(.72rem, 2vw, .82rem); letter-spacing:.24em; color: var(--gold);
-    background:none; border:0; border-radius:0; box-shadow:none;
-    padding: .5em .1em .85em .34em; margin-top:.2rem; cursor:pointer;
-    -webkit-appearance:none; appearance:none;
-  }
-  #rsvp[data-stage="confirmed"] .rsvp-continue{ display:none; }
-  #rsvp .rsvp-continue .arrow{ display:inline-block; transition: transform .4s ease; }
-  #rsvp .rsvp-continue:hover .arrow,
-  #rsvp .rsvp-continue:focus-visible .arrow,
-  #rsvp .rsvp-continue:active .arrow{ transform: translateX(3px); }
-
   /* stage reveal — CSS keyframes started by the stage attribute
      (same Safari-safe approach as the rest of the page) */
   #rsvp[data-stage="details"] .rsvp-echo,
@@ -1700,8 +1685,6 @@
   #rsvp[data-stage="confirmed"] .rsvp-step--message { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-msg)  both; }
   #rsvp[data-stage="details"] .rsvp-step--side,
   #rsvp[data-stage="confirmed"] .rsvp-step--side    { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-side) both; }
-  #rsvp[data-stage="details"] .rsvp-continue,
-  #rsvp[data-stage="confirmed"] .rsvp-continue      { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-go)   both; }
 
   /* -- 3 · confirmation: "Your place is waiting." → WhatsApp CTA -- */
   #rsvpForm > .rsvp-confirm{
@@ -1733,28 +1716,58 @@
   #rsvp[data-stage="confirmed"] .rsvp-thanks-sub  { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-sub) both; }
   #rsvp[data-stage="confirmed"] .rsvp-submit      { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-cta) both; }
 
-  /* the existing WhatsApp CTA — same button, same handler, now text + line */
+  /* the existing WhatsApp CTA — same button, same handler.
+     An engraved-card button: hairline champagne border with a second inner
+     hairline, warm ivory sheen, and a slow light travelling along its edge. */
   #rsvp .rsvp-submit{
-    margin-top: clamp(1.8rem, 5vh, 2.4rem);
-    display:inline-flex; align-items:center; justify-content:center; gap:.7em;
+    margin-top: clamp(1.6rem, 4.5vh, 2.2rem);
+    display:inline-flex; align-items:center; justify-content:center; gap:.9em;
     font-family:'Jost', sans-serif; font-weight:400; letter-spacing:.24em;
     font-size: clamp(.72rem, 2vw, .82rem); color: var(--ink); text-align:center; line-height:1.55;
-    background:none; border:0; border-radius:0; box-shadow:none;
-    padding: .5em .2em .95em .44em; cursor:pointer;
-    -webkit-appearance:none; appearance:none;
+    position:relative; overflow:hidden;
+    background: linear-gradient(180deg, rgba(255,252,243,.82) 0%, rgba(243,231,204,.6) 100%);
+    border:1px solid var(--gold); border-radius:2px;
+    box-shadow: inset 0 0 0 3px rgba(255,251,240,.7), inset 0 0 0 4px rgba(200,169,106,.38),
+                0 14px 30px -18px rgba(120,90,40,.5);
+    padding: 1.15em 2.3em 1.1em 2.5em; cursor:pointer;
+    -webkit-appearance:none; appearance:none; -webkit-tap-highlight-color: transparent;
+    transition: background .6s ease, box-shadow .6s ease, border-color .6s ease;
   }
-  #rsvp .rsvp-submit:hover{ background:none; border:0; }
-  #rsvp .rsvp-submit:active{ transform:none; }
+  #rsvp .rsvp-submit::after{ display:none; }   /* no text underline: the border is the line */
   #rsvp .rsvp-submit svg{ display:none; }
   #rsvp .rsvp-submit small{
     text-transform:uppercase; letter-spacing:.26em; font-size:.78em; opacity:.78;
   }
+  #rsvp .rsvp-submit .arrow{ color: var(--gold); transition: transform .5s var(--ease); margin-left:0; }
+  #rsvp .rsvp-submit:active{ transform:none; background: linear-gradient(180deg, rgba(255,252,243,.95) 0%, rgba(240,225,190,.8) 100%); }
+  #rsvp .rsvp-submit:active .arrow,
+  #rsvp .rsvp-submit:focus-visible .arrow{ transform: translateX(4px); }
+  #rsvp .rsvp-submit:focus-visible{
+    outline:none;
+    box-shadow: inset 0 0 0 3px rgba(255,251,240,.8), inset 0 0 0 4px rgba(200,169,106,.7),
+                0 14px 30px -18px rgba(120,90,40,.55);
+  }
   #rsvp[data-stage="confirmed"] .rsvp-submit::before{
-    animation: lineSweepOnce 1.7s ease-in-out var(--t-glint) 1 both;
+    top:0; bottom:auto; height:1px; width:42%;
+    animation: lineSweepOnce 1.9s ease-in-out var(--t-glint) 1 both;
   }
   @media (hover:hover){
-    #rsvp[data-stage="confirmed"] .rsvp-submit:hover::before{ animation: lineSweep 1.4s ease-in-out both; }
+    #rsvp .rsvp-submit:hover{
+      background: linear-gradient(180deg, rgba(255,253,246,.95) 0%, rgba(243,229,196,.78) 100%);
+      box-shadow: inset 0 0 0 3px rgba(255,251,240,.85), inset 0 0 0 4px rgba(200,169,106,.6),
+                  0 16px 34px -18px rgba(120,90,40,.6);
+    }
+    #rsvp .rsvp-submit:hover .arrow{ transform: translateX(4px); }
+    #rsvp[data-stage="confirmed"] .rsvp-submit:hover::before{ animation: lineSweep 1.6s ease-in-out both; }
   }
+
+  /* soft highlight on the name field when a side is picked before a name is typed */
+  #rsvp .rsvp-step--name .rsvp-label{ transition: color .6s ease; }
+  #rsvp .rsvp-step--name .rsvp-input{ transition: background-color .6s ease, border-color .6s ease; }
+  #rsvp .rsvp-step--name.needs-name .rsvp-input{
+    background-color: rgba(240,217,160,.2); border-color: var(--gold);
+  }
+  #rsvp .rsvp-step--name.needs-name .rsvp-label{ color: var(--ink); }
 
   /* ============================================================
      LOCATION — "we have arrived"
@@ -2416,8 +2429,6 @@
             </div>
           </div>
           <p class="rsvp-validation" id="rsvpValidation" role="alert" hidden></p>
-
-                <button type="submit" class="rsvp-continue cta-line" id="rsvpContinue"><span>Confirm</span><span class="arrow" aria-hidden="true">&rarr;</span></button>
               </div>
             </div>
           </div>
@@ -2854,14 +2865,13 @@
       if (!rsvpSection) return;
       rsvpSection.setAttribute('data-attendance', attendance);
       rsvpSection.setAttribute('data-tempo', revealedOnce ? 'quick' : 'full');
-      if (stage !== 'details'){ setStage('details'); revealedOnce = true; }
+      if (stage === 'choose'){ setStage('details'); }
+      revealedOnce = true;
     }
 
-    // first confirm: reveal "Your place is waiting." — the WhatsApp CTA that
-    // appears with it is the second (and only sending) submit
+    // reveal "Your place is waiting." + the WhatsApp CTA (nothing is sent until
+    // the CTA itself is tapped)
     function confirmRsvp(){
-      const active = document.activeElement;
-      if (active && active !== document.body && rsvpForm.contains(active) && active.blur) active.blur();
       setStage('confirmed');
       // same flow, same place: the confirmation opens right under the fields.
       // Only nudge the page (never jump) if the WhatsApp CTA would be off-screen.
@@ -2898,12 +2908,42 @@
       });
     });
 
+    // choosing who to RSVP with is the last step: once a name is in, the
+    // confirmation follows directly (no separate Confirm button)
+    const nameStep = nameInput.closest('.rsvp-step');
+    function clearNeedsName(){ if (nameStep) nameStep.classList.remove('needs-name'); }
+
+    function maybeReveal(fromSide){
+      if (stage !== 'details' || !attendance || !side) return;
+      if (!nameInput.value.trim()){
+        if (fromSide){
+          if (nameStep) nameStep.classList.add('needs-name');
+          showValidation('Please add your name to continue.');
+        }
+        return;
+      }
+      clearNeedsName();
+      hideValidation();
+      if (fromSide){
+        const active = document.activeElement;
+        if (active && active !== document.body && rsvpForm.contains(active) && active.blur) active.blur();
+      }
+      confirmRsvp();
+    }
+
     sideButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         side = btn.dataset.side;
         selectFrom(sideButtons, btn, () => hideValidation());
+        maybeReveal(true);
       });
     });
+
+    nameInput.addEventListener('input', () => {
+      if (nameInput.value.trim()){ clearNeedsName(); hideValidation(); }
+    });
+    // side was picked first: reveal as soon as the name is finished
+    nameInput.addEventListener('change', () => maybeReveal(false));
 
     function hideValidation(){
       validationEl.hidden = true;
@@ -2975,10 +3015,10 @@
 
       hideValidation();
 
-      // step 1 of 2 — confirm: reveal the confirmation (nothing is sent yet)
+      // (Enter key before the confirmation is showing: reveal it, send nothing yet)
       if (stage !== 'confirmed'){ confirmRsvp(); return; }
 
-      // step 2 of 2 — the existing WhatsApp CTA (unchanged below)
+      // the WhatsApp CTA (unchanged below)
       const { text, phone } = buildMessage(guestName, personalMsg);
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
       // Phones / tablets: hand off in the SAME tab so the wa.me universal link
