@@ -1462,6 +1462,436 @@
   }
 
   /* ============================================================
+     UPGRADE — RSVP interaction · Location arrival · Paper-light material
+
+     Additive layer, inserted after the existing reduced-motion block.
+     RSVP rules are scoped under #rsvp and Location rules under #location,
+     so nothing else on the page is touched. No new observer and no timers:
+       · Location is driven by the existing .in-view class.
+       · RSVP is driven by data-stage / data-attendance on #rsvp
+         (flipped by the click/submit handlers that already exist).
+     ============================================================ */
+
+  @keyframes revealRise{
+    from{ opacity:0; transform:translateY(12px); filter:blur(6px); visibility:hidden; }
+    to  { opacity:1; transform:none;             filter:none;       visibility:visible; }
+  }
+  /* reduced-motion twin: opacity only */
+  @keyframes revealFade{
+    from{ opacity:0; visibility:hidden; }
+    to  { opacity:1; visibility:visible; }
+  }
+  @keyframes lineDraw{
+    from{ opacity:0; transform:scaleX(0); }
+    to  { opacity:1; transform:scaleX(1); }
+  }
+  /* a soft champagne highlight travelling once along a thin line */
+  @keyframes lineSweep{
+    0%  { opacity:0; transform:translateX(-100%); }
+    14% { opacity:1; }
+    86% { opacity:1; }
+    100%{ opacity:0; transform:translateX(250%); }
+  }
+  @keyframes lineSweepOnce{
+    0%  { opacity:0; transform:translateX(-100%); }
+    14% { opacity:1; }
+    86% { opacity:1; }
+    100%{ opacity:0; transform:translateX(250%); }
+  }
+  /* Location: a hairline that starts at the centre and travels outward */
+  @keyframes arrivalRule{
+    0%  { opacity:0;   transform:scaleX(0); }
+    10% { opacity:.85; }
+    100%{ opacity:.85; transform:scaleX(1); }
+  }
+  @keyframes settleGlow{
+    from{ opacity:0; transform:scale(1.14); }
+    to  { opacity:1; transform:scale(1); }
+  }
+
+  /* ---- shared editorial "line" CTA: text + thin champagne underline that
+     extends and carries a soft highlight. No fill, no box, no scale. ---- */
+  .cta-line{ position:relative; }
+  .cta-line::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
+    background: var(--gold-line);
+    transform: scaleX(.7); transform-origin:center;
+    transition: transform .9s cubic-bezier(.19,1,.22,1), background-color .5s ease;
+  }
+  .cta-line::before{
+    content:""; position:absolute; left:0; bottom:0; width:38%; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(240,217,160,1) 50%, transparent);
+    box-shadow: 0 0 5px rgba(240,217,160,.65);
+    opacity:0; transform: translateX(-100%); pointer-events:none;
+  }
+  .cta-line:focus-visible{ outline:none; }
+  .cta-line:focus-visible::after,
+  .cta-line:active::after{ transform:scaleX(1); background: var(--gold); }
+  @media (hover:hover){
+    .cta-line:hover::after{ transform:scaleX(1); background: var(--gold); }
+    .cta-line:hover::before{ animation: lineSweep 1.4s ease-in-out both; }
+  }
+
+  /* ============================================================
+     RSVP — choice → acknowledgement → response → details → confirmation
+     ============================================================ */
+
+  #rsvp{
+    --ease: cubic-bezier(.19,1,.22,1);
+    --rise-name: revealRise; --rise-dur: 1.15s;
+    /* stage timings (seconds from the moment the stage begins) */
+    --t-echo:.5s; --t-ask:1.45s; --t-name:2.05s; --t-msg:2.3s; --t-side:2.55s; --t-go:2.85s;
+    --t-ty:.8s; --t-line:1.6s; --t-sub:2.05s; --t-cta:2.8s; --t-glint:3.7s;
+  }
+  /* switching answers (or coming back to edit) replays the reveal faster */
+  #rsvp[data-tempo="quick"]{
+    --t-echo:.15s; --t-ask:.4s; --t-name:.6s; --t-msg:.75s; --t-side:.9s; --t-go:1.05s;
+  }
+
+  /* the intro and the choice row lift very slightly once a choice is made */
+  #rsvp .rsvp-intro{ transition: transform 1.4s var(--ease); }
+  #rsvp .rsvp-lift{ transition: transform 1.4s var(--ease); }
+  #rsvp[data-stage="details"] .rsvp-intro,
+  #rsvp[data-stage="confirmed"] .rsvp-intro,
+  #rsvp[data-stage="details"] .rsvp-lift,
+  #rsvp[data-stage="confirmed"] .rsvp-lift{ transform: translateY(-8px); }
+
+  /* the form's own spacing is now handled per stage */
+  #rsvpForm{ gap:0; }
+
+  /* -- 1 · the two choices: text only, thin champagne line, no boxes -- */
+  #rsvp .rsvp-toggle{
+    display:flex; justify-content:center; align-items:stretch;
+    gap: clamp(1.4rem, 7vw, 2.6rem); width:100%;
+  }
+  #rsvp .rsvp-toggle::before{           /* hairline between the two answers */
+    content:""; order:1; align-self:center; width:1px; height:2.3em;
+    background: linear-gradient(to bottom, transparent, var(--gold-line), transparent);
+    opacity:.75;
+  }
+  #rsvp .rsvp-choice:nth-child(1){ order:0; }
+  #rsvp .rsvp-choice:nth-child(2){ order:2; }
+  #rsvp .rsvp-choice{
+    position:relative; flex:0 1 auto; min-width:0;
+    font-family:'Jost', sans-serif; font-weight:400; text-transform:uppercase;
+    font-size: clamp(.7rem, 2.5vw, .8rem); letter-spacing:.24em; line-height:1.7;
+    color: var(--ink-soft); text-align:center;
+    background:none; border:0; border-radius:0; box-shadow:none;
+    -webkit-appearance:none; appearance:none;
+    padding: .6em .1em 1.3em .34em; cursor:pointer;
+    transition: opacity 1.1s ease, color .6s ease;
+  }
+  #rsvp .rsvp-choice[aria-checked="true"]{
+    color: var(--ink); background:none; border:0; box-shadow:none;
+  }
+  #rsvp .rsvp-choice:focus-visible{ outline:none; }
+  #rsvp .rsvp-choice::after{            /* the thin champagne line */
+    content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
+    background: var(--gold-line);
+    transform: scaleX(.3); transform-origin:center;
+    transition: transform 1s var(--ease), background-color .6s ease;
+  }
+  #rsvp .rsvp-choice::before{           /* the light that sweeps once when chosen */
+    content:""; position:absolute; left:0; bottom:0; width:42%; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(240,217,160,1) 50%, transparent);
+    box-shadow: 0 0 6px rgba(240,217,160,.7);
+    opacity:0; transform: translateX(-100%); pointer-events:none;
+  }
+  #rsvp .rsvp-choice[aria-checked="true"]::after{ transform:scaleX(1); background: var(--gold); }
+  #rsvp .rsvp-choice[aria-checked="true"]::before{
+    animation: lineSweep 1.7s cubic-bezier(.4,0,.2,1) .05s 1 both;
+  }
+  #rsvp .rsvp-choice:focus-visible::after{ transform:scaleX(.85); background: var(--gold); }
+  /* the answer not chosen gently fades back (still tappable to change) */
+  #rsvp[data-attendance] .rsvp-choice[aria-checked="false"]{ opacity:.36; }
+  @media (hover:hover){
+    #rsvp .rsvp-choice:hover::after{ transform:scaleX(.72); }
+    #rsvp .rsvp-choice[aria-checked="true"]:hover::after{ transform:scaleX(1); }
+    #rsvp[data-attendance] .rsvp-choice[aria-checked="false"]:hover{ opacity:.7; }
+  }
+  @media (min-width:480px){
+    #rsvp .rsvp-choice br{ display:none; }   /* one line per answer on wider screens */
+  }
+
+  /* -- 2 · the flow opens (grid-row collapse) once a choice exists -- */
+  #rsvpForm > .rsvp-flow{
+    display:grid; grid-template-rows:0fr;
+    width:100%; opacity:0; visibility:hidden;
+    transform:none; filter:none; animation:none;
+    transition: grid-template-rows 1s var(--ease), opacity .6s ease, visibility 0s linear 1s;
+  }
+  #rsvp[data-stage="details"] #rsvpForm > .rsvp-flow{
+    grid-template-rows:1fr; opacity:1; visibility:visible;
+    transition: grid-template-rows 1.2s var(--ease), opacity .5s ease .1s, visibility 0s;
+  }
+  .rsvp-flow-inner{ min-height:0; overflow:hidden; text-align:center; }
+
+  /* -- the emotional response -- */
+  #rsvp .rsvp-reply{ display:none; padding-top: clamp(1.7rem, 4.6vh, 2.3rem); }
+  #rsvp[data-attendance="accept"]  .rsvp-reply--accept,
+  #rsvp[data-attendance="decline"] .rsvp-reply--decline{ display:block; }
+  #rsvp .rsvp-echo{
+    margin:0; font-family:'Playfair Display', serif; font-style:italic; font-weight:500;
+    font-size: clamp(1.3rem, 5.4vw, 1.7rem); line-height:1.32; color: var(--ink);
+  }
+  #rsvp .rsvp-ask{
+    margin: clamp(.9rem, 2.6vw, 1.2rem) 0 0;
+    font-style:italic; font-weight:400; color: var(--ink-soft);
+    font-size: clamp(1.02rem, 3vw, 1.2rem); line-height:1.5;
+  }
+
+  /* -- the details (existing fields, unchanged) -- */
+  #rsvp .rsvp-details{
+    display:flex; flex-direction:column; align-items:center;
+    gap: clamp(1.5rem, 4vh, 2rem);
+    padding: clamp(1.8rem, 5vh, 2.4rem) 0 .4rem;
+  }
+  #rsvp .rsvp-step{ width:100%; }
+
+  /* side selector — same two options, now editorial instead of boxed */
+  #rsvp .rsvp-sides{ justify-content:center; gap: clamp(1.2rem, 6vw, 2.4rem); }
+  #rsvp .rsvp-side{
+    position:relative; flex:1 1 0; max-width:13rem; border:0; border-radius:0;
+    background:none; box-shadow:none; -webkit-appearance:none; appearance:none;
+    padding: .3em .2em 1.15em; opacity:.62;
+    transition: opacity .8s ease;
+  }
+  #rsvp .rsvp-side[aria-checked="true"]{ opacity:1; background:none; border:0; box-shadow:none; }
+  #rsvp .rsvp-side:focus-visible{ outline:none; }
+  #rsvp .rsvp-side::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
+    background: var(--gold-line);
+    transform: scaleX(.3); transform-origin:center;
+    transition: transform 1s var(--ease), background-color .6s ease;
+  }
+  #rsvp .rsvp-side[aria-checked="true"]::after{ transform:scaleX(1); background: var(--gold); }
+  #rsvp .rsvp-side:focus-visible::after{ transform:scaleX(.85); background: var(--gold); }
+  @media (hover:hover){
+    #rsvp .rsvp-side:hover{ opacity:1; }
+    #rsvp .rsvp-side:hover::after{ transform:scaleX(.72); }
+    #rsvp .rsvp-side[aria-checked="true"]:hover::after{ transform:scaleX(1); }
+  }
+
+  /* CONFIRM — the small text control that moves from details to confirmation */
+  #rsvp .rsvp-continue{
+    display:inline-flex; align-items:center; gap:.5em;
+    font-family:'Jost', sans-serif; font-weight:400; text-transform:uppercase;
+    font-size: clamp(.72rem, 2vw, .82rem); letter-spacing:.24em; color: var(--gold);
+    background:none; border:0; border-radius:0; box-shadow:none;
+    padding: .5em .1em .85em .34em; margin-top:.2rem; cursor:pointer;
+    -webkit-appearance:none; appearance:none;
+  }
+  #rsvp .rsvp-continue .arrow{ display:inline-block; transition: transform .4s ease; }
+  #rsvp .rsvp-continue:hover .arrow,
+  #rsvp .rsvp-continue:focus-visible .arrow,
+  #rsvp .rsvp-continue:active .arrow{ transform: translateX(3px); }
+
+  /* stage reveal — CSS keyframes started by the stage attribute
+     (same Safari-safe approach as the rest of the page) */
+  #rsvp[data-stage="details"] .rsvp-echo          { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-echo) both; }
+  #rsvp[data-stage="details"] .rsvp-ask           { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-ask)  both; }
+  #rsvp[data-stage="details"] .rsvp-step--name    { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-name) both; }
+  #rsvp[data-stage="details"] .rsvp-step--message { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-msg)  both; }
+  #rsvp[data-stage="details"] .rsvp-step--side    { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-side) both; }
+  #rsvp[data-stage="details"] .rsvp-continue      { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-go)   both; }
+
+  /* -- 3 · confirmation: "Your place is waiting." → WhatsApp CTA -- */
+  #rsvpForm > .rsvp-confirm{
+    display:none; width:100%; flex-direction:column; align-items:center; text-align:center;
+    opacity:1; transform:none; filter:none; animation:none;
+    padding-top: clamp(2rem, 5.5vh, 2.8rem);
+  }
+  #rsvp[data-stage="confirmed"] #rsvpForm > .rsvp-confirm{ display:flex; }
+  #rsvp .rsvp-thanks{ display:none; flex-direction:column; align-items:center; }
+  #rsvp[data-attendance="accept"]  .rsvp-thanks--accept,
+  #rsvp[data-attendance="decline"] .rsvp-thanks--decline{ display:flex; }
+  #rsvp .rsvp-thanks-title{
+    margin:0; font-family:'Playfair Display', serif; font-style:italic; font-weight:600;
+    font-size: clamp(1.9rem, 7.6vw, 2.7rem); line-height:1.16; color: var(--ink);
+  }
+  #rsvp .rsvp-thanks--decline .rsvp-thanks-title{ font-size: clamp(1.55rem, 6.2vw, 2.2rem); }
+  #rsvp .rsvp-thanks-line{
+    display:block; width:min(46vw, 180px); height:1px;
+    margin: clamp(1rem, 3vw, 1.4rem) auto;
+    background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
+    transform-origin:center;
+  }
+  #rsvp .rsvp-thanks-sub{
+    margin:0; font-style:italic; font-weight:400; color: var(--ink-soft);
+    font-size: clamp(.98rem, 2.8vw, 1.15rem); line-height:1.5;
+  }
+  #rsvp[data-stage="confirmed"] .rsvp-thanks-title{ animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-ty)  both; }
+  #rsvp[data-stage="confirmed"] .rsvp-thanks-line { animation: lineDraw 1.1s ease var(--t-line) both; }
+  #rsvp[data-stage="confirmed"] .rsvp-thanks-sub  { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-sub) both; }
+  #rsvp[data-stage="confirmed"] .rsvp-submit      { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-cta) both; }
+
+  /* the existing WhatsApp CTA — same button, same handler, now text + line */
+  #rsvp .rsvp-submit{
+    margin-top: clamp(1.8rem, 5vh, 2.4rem);
+    display:inline-flex; align-items:center; justify-content:center; gap:.7em;
+    font-family:'Jost', sans-serif; font-weight:400; letter-spacing:.24em;
+    font-size: clamp(.72rem, 2vw, .82rem); color: var(--ink); text-align:center; line-height:1.55;
+    background:none; border:0; border-radius:0; box-shadow:none;
+    padding: .5em .2em .95em .44em; cursor:pointer;
+    -webkit-appearance:none; appearance:none;
+  }
+  #rsvp .rsvp-submit:hover{ background:none; border:0; }
+  #rsvp .rsvp-submit:active{ transform:none; }
+  #rsvp .rsvp-submit svg{ display:none; }
+  #rsvp .rsvp-submit small{
+    text-transform:uppercase; letter-spacing:.26em; font-size:.78em; opacity:.78;
+  }
+  #rsvp[data-stage="confirmed"] .rsvp-submit::before{
+    animation: lineSweepOnce 1.7s ease-in-out var(--t-glint) 1 both;
+  }
+  @media (hover:hover){
+    #rsvp[data-stage="confirmed"] .rsvp-submit:hover::before{ animation: lineSweep 1.4s ease-in-out both; }
+  }
+
+  /* ============================================================
+     LOCATION — "we have arrived"
+     atmosphere settles → stem lands → a hairline travels outward from the
+     centre → venue → place → sentence → directions. One pass, on .in-view.
+     ============================================================ */
+
+  #location{
+    --loc-rule1:1.2s; --loc-rule2:1.5s; --loc-venue:1.75s; --loc-corner:2.2s;
+    --loc-place:2.3s; --loc-quote:2.75s; --loc-cta:3.2s; --loc-glint:4s;
+  }
+
+  /* atmosphere: a soft champagne light settles behind the venue */
+  #location .location-copy{ position:relative; }
+  #location .location-copy::before{
+    content:""; position:absolute; z-index:-1; pointer-events:none;
+    top:-6%; bottom:-6%; left:-8%; right:-8%;
+    background: radial-gradient(ellipse at 50% 50%,
+      rgba(255,248,228,.62) 0%, rgba(240,217,160,.17) 44%, rgba(240,217,160,0) 72%);
+    opacity:0;
+  }
+  #location.in-view .location-copy::before{ animation: settleGlow 2.2s var(--ease, cubic-bezier(.19,1,.22,1)) 0s both; }
+
+  /* the stem's spark lands just as the hairline begins */
+  #location.in-view .location-arrival-stem::after{ animation: arrivalTravel .8s ease-in-out .65s 1 both; }
+
+  /* the frame becomes a container; its parts arrive one by one */
+  #location.in-view .location-copy > .location-frame{
+    animation:none; opacity:1; transform:none; filter:none;
+  }
+  #location .location-copy > .location-frame{ opacity:1; transform:none; filter:none; }
+  #location .location-frame::before,
+  #location .location-frame::after{       /* architectural top + bottom rules */
+    content:""; position:absolute; left:0; right:0; height:1px; pointer-events:none;
+    background: linear-gradient(90deg,
+      rgba(240,217,160,.95) 0, var(--gold-line) 4%, var(--gold-line) 96%, rgba(240,217,160,.95) 100%);
+    opacity:0; transform:scaleX(0); transform-origin:50% 50%;
+  }
+  #location .location-frame::before{ top:0; }
+  #location .location-frame::after { bottom:0; }
+  #location.in-view .location-frame::before{ animation: arrivalRule 1.4s cubic-bezier(.45,0,.2,1) var(--loc-rule1) both; }
+  #location.in-view .location-frame::after { animation: arrivalRule 1.4s cubic-bezier(.45,0,.2,1) var(--loc-rule2) both; }
+
+  #location .location-frame-corner,
+  #location .location-venue,
+  #location .location-place{ opacity:0; }
+  #location.in-view .location-frame-corner{ animation: revealFade 1s ease var(--loc-corner) both; }
+  #location.in-view .location-venue{ animation: revealRise 1.3s var(--ease, cubic-bezier(.19,1,.22,1)) var(--loc-venue) both; }
+  #location.in-view .location-place{ animation: revealRise 1.1s var(--ease, cubic-bezier(.19,1,.22,1)) var(--loc-place) both; }
+  #location.in-view .location-quote  { animation-delay: var(--loc-quote); }
+  #location.in-view .location-actions{ animation-delay: var(--loc-cta); }
+
+  /* typography: the venue is the focal point, the place is quiet */
+  #location .location-venue{ letter-spacing:.035em; }
+  #location .location-place{
+    margin-top: clamp(.8rem, 2.4vw, 1.1rem);
+    text-transform:uppercase; letter-spacing:.52em; padding-left:.52em;
+    font-size: clamp(.66rem, 1.9vw, .78rem);
+  }
+
+  /* CTA: text + thin champagne underline that extends and carries light */
+  #location .location-cta{
+    border-bottom:0; padding-bottom:.8em;
+  }
+  #location .location-cta:hover,
+  #location .location-cta:active{ opacity:1; border-color:transparent; }
+  #location.in-view .location-cta::before{
+    animation: lineSweepOnce 1.7s ease-in-out var(--loc-glint) 1 both;
+  }
+  @media (hover:hover){
+    #location .location-cta:hover::before{ animation: lineSweep 1.4s ease-in-out both; }
+  }
+
+  /* ============================================================
+     MATERIAL — warm light drifting across ivory paper / silk
+     One pseudo-element on the existing fixed post-hero backdrop. It sits
+     above the video, tint and grain and below all content; it is a
+     transform-only animation on a compositor layer (no repaint, no layout),
+     and it fades in with the backdrop itself.
+     ============================================================ */
+  .post-hero-bg::after{
+    content:""; position:absolute; top:0; bottom:0; left:-25%; right:-25%;
+    pointer-events:none;
+    background:
+      linear-gradient(104deg,
+        rgba(255,246,222,0)   22%,
+        rgba(255,244,216,.13) 40%,
+        rgba(250,232,192,.20) 50%,
+        rgba(255,244,216,.10) 60%,
+        rgba(255,246,222,0)   78%),
+      radial-gradient(ellipse 60% 45% at 50% 28%, rgba(255,249,235,.10), rgba(255,249,235,0) 70%);
+    transform: translate3d(-18%,0,0);
+    animation: materialDrift 26s ease-in-out infinite alternate;
+  }
+  @keyframes materialDrift{
+    from{ transform: translate3d(-18%,0,0); }
+    to  { transform: translate3d(18%,0,0); }
+  }
+
+  /* ============================================================
+     REDUCED MOTION for everything above: no movement, no blur, no travel.
+     Content still arrives (opacity only) and the material light stays as a
+     static, barely-there layer.
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce){
+    #rsvp, #rsvp[data-tempo="quick"]{
+      --rise-name: revealFade; --rise-dur:.5s;
+      --t-echo:.1s; --t-ask:.35s; --t-name:.55s; --t-msg:.65s; --t-side:.75s; --t-go:.85s;
+      --t-ty:.15s; --t-line:.3s; --t-sub:.45s; --t-cta:.75s;
+    }
+    #rsvp .rsvp-intro, #rsvp .rsvp-lift{ transition:none; }
+    #rsvp[data-stage="details"] .rsvp-intro,
+    #rsvp[data-stage="confirmed"] .rsvp-intro,
+    #rsvp[data-stage="details"] .rsvp-lift,
+    #rsvp[data-stage="confirmed"] .rsvp-lift{ transform:none; }
+    #rsvpForm > .rsvp-flow,
+    #rsvp[data-stage="details"] #rsvpForm > .rsvp-flow{ transition:none; }
+    #rsvp .rsvp-choice, #rsvp .rsvp-side{ transition:none; }
+    #rsvp .rsvp-choice::after, #rsvp .rsvp-side::after, .cta-line::after{ transition:none; }
+    #rsvp .rsvp-choice[aria-checked="true"]::before{ animation:none; opacity:0; }
+    #rsvp[data-stage="confirmed"] .rsvp-thanks-line{ animation: revealFade .5s ease var(--t-line) both; }
+    #rsvp[data-stage="confirmed"] .rsvp-submit::before,
+    #rsvp[data-stage="confirmed"] .rsvp-submit:hover::before,
+    #location.in-view .location-cta::before,
+    #location .location-cta:hover::before,
+    .cta-line:hover::before{ animation:none; opacity:0; }
+
+    #location{
+      --loc-rule1:.2s; --loc-rule2:.3s; --loc-venue:.45s; --loc-corner:.6s;
+      --loc-place:.75s; --loc-quote:.95s; --loc-cta:1.15s;
+    }
+    #location.in-view .location-copy::before{ animation: revealFade .8s ease 0s both; }
+    #location .location-frame::before,
+    #location .location-frame::after{ transform:scaleX(1); }
+    #location.in-view .location-frame::before,
+    #location.in-view .location-frame::after{ animation: revealFade .6s ease var(--loc-rule1) both; opacity:.85; }
+    #location.in-view .location-frame::after{ animation-delay: var(--loc-rule2); }
+    #location.in-view .location-venue,
+    #location.in-view .location-place{ animation-name: revealFade; animation-duration:.6s; animation-timing-function: ease-out; }
+    #location.in-view .location-arrival-stem::after{ animation:none; opacity:0; }
+
+    .post-hero-bg::after{ animation:none; transform: translate3d(0,0,0); }
+  }
+
+  /* ============================================================
      FINAL CINEMATIC VIDEO — the closing chapter of the film.
      Two portrait clips play back-to-back (1 → 2 → 1 → 2 …) while this
      section is in view and pause when it scrolls away; nothing else on
@@ -1901,7 +2331,7 @@
         </div>
 
         <div class="location-actions" id="locationActions">
-          <a class="location-cta" href="https://share.google/igSaItVGxoklcSI4m" target="_blank" rel="noopener">
+          <a class="location-cta cta-line" href="https://share.google/igSaItVGxoklcSI4m" target="_blank" rel="noopener">
             GET DIRECTIONS <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
@@ -1929,25 +2359,39 @@
         </div>
 
         <form class="rsvp-form" id="rsvpForm" novalidate>
-          <div class="rsvp-field">
-            <label class="rsvp-label" for="rsvpName">Your Name</label>
-            <input class="rsvp-input" type="text" id="rsvpName" name="rsvpName" autocomplete="name" placeholder="Enter your full name">
-          </div>
-
-          <div class="rsvp-field">
-            <span class="rsvp-label">Will You Be Joining Us?</span>
-            <div class="rsvp-toggle" role="radiogroup" aria-label="Attendance">
-              <button type="button" class="rsvp-choice" data-attendance="accept" role="radio" aria-checked="false">Joyfully Accept</button>
-              <button type="button" class="rsvp-choice" data-attendance="decline" role="radio" aria-checked="false">Regretfully Decline</button>
+          <!-- 1 · CHOICE — the only thing offered at first -->
+          <div class="rsvp-field rsvp-choose">
+            <div class="rsvp-lift">
+              <span class="rsvp-label">Will You Be Joining Us?</span>
+              <div class="rsvp-toggle" role="radiogroup" aria-label="Attendance">
+                <button type="button" class="rsvp-choice" data-attendance="accept" role="radio" aria-checked="false">Joyfully <br>Accept</button>
+                <button type="button" class="rsvp-choice" data-attendance="decline" role="radio" aria-checked="false">Regretfully <br>Decline</button>
+              </div>
             </div>
           </div>
 
-          <div class="rsvp-field">
+          <!-- 2 · RESPONSE + DETAILS — opens only after a choice is made -->
+          <div class="rsvp-flow" id="rsvpFlow">
+            <div class="rsvp-flow-inner">
+              <div class="rsvp-reply rsvp-reply--accept">
+                <p class="rsvp-echo">We&rsquo;re so happy to have you with us.</p>
+                <p class="rsvp-ask">May we know who you&rsquo;re joining?</p>
+              </div>
+              <div class="rsvp-reply rsvp-reply--decline">
+                <p class="rsvp-echo">We&rsquo;ll miss celebrating this moment with you.</p>
+                <p class="rsvp-ask">May we know who you are?</p>
+              </div>
+
+              <div class="rsvp-details">
+          <div class="rsvp-step rsvp-step--name">
+            <label class="rsvp-label" for="rsvpName">Your Name</label>
+            <input class="rsvp-input" type="text" id="rsvpName" name="rsvpName" autocomplete="name" placeholder="Enter your full name">
+          </div>
+          <div class="rsvp-step rsvp-step--message">
             <label class="rsvp-label" for="rsvpMessage">A Message for Hashini &amp; Thilanga <span class="rsvp-optional">(optional)</span></label>
             <textarea class="rsvp-input rsvp-textarea" id="rsvpMessage" name="rsvpMessage" rows="3" placeholder="Write a few words&hellip;"></textarea>
           </div>
-
-          <div class="rsvp-field">
+          <div class="rsvp-step rsvp-step--side">
             <span class="rsvp-label">RSVP With</span>
             <div class="rsvp-sides" role="radiogroup" aria-label="RSVP recipient">
               <button type="button" class="rsvp-side" data-side="bride" role="radio" aria-checked="false">
@@ -1962,16 +2406,33 @@
               </button>
             </div>
           </div>
-
           <p class="rsvp-validation" id="rsvpValidation" role="alert" hidden></p>
 
-          <button type="submit" class="rsvp-submit" id="rsvpSubmit">
+                <button type="submit" class="rsvp-continue cta-line" id="rsvpContinue"><span>Confirm</span><span class="arrow" aria-hidden="true">&rarr;</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 · CONFIRMATION — then the existing WhatsApp CTA -->
+          <div class="rsvp-confirm" id="rsvpConfirm">
+            <div class="rsvp-thanks rsvp-thanks--accept">
+              <p class="rsvp-thanks-title">Your place is waiting.</p>
+              <span class="rsvp-thanks-line" aria-hidden="true"></span>
+              <p class="rsvp-thanks-sub">Thank you for being part of this moment.</p>
+            </div>
+            <div class="rsvp-thanks rsvp-thanks--decline">
+              <p class="rsvp-thanks-title">Thank you for letting us know.</p>
+              <span class="rsvp-thanks-line" aria-hidden="true"></span>
+              <p class="rsvp-thanks-sub">We&rsquo;ll be thinking of you on our day.</p>
+            </div>
+          <button type="submit" class="rsvp-submit cta-line" id="rsvpSubmit">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M12 3.5c-4.7 0-8.5 3.3-8.5 7.4 0 2.3 1.2 4.4 3.2 5.8-.1 1-.5 2.2-1.2 3.1 1.4-.2 2.8-.8 3.9-1.6.8.2 1.7.3 2.6.3 4.7 0 8.5-3.3 8.5-7.6S16.7 3.5 12 3.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
             </svg>
             <span>SEND RSVP<br><small>via WhatsApp</small></span>
             <span class="arrow" aria-hidden="true">&rarr;</span>
           </button>
+          </div>
         </form>
 
         <div class="gold-divider" aria-hidden="true">
@@ -2367,6 +2828,41 @@
     let attendance = null; // 'accept' | 'decline'
     let side = null; // 'bride' | 'groom'
 
+    // ---- staged reveal: CSS does all the motion, JS only flips data-* on #rsvp ----
+    const rsvpSection = document.getElementById('rsvp');
+    const rsvpFlow = document.getElementById('rsvpFlow');
+    const reduceMotionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    let stage = 'choose'; // 'choose' | 'details' | 'confirmed'
+    let revealedOnce = false;
+
+    function setStage(next){
+      stage = next;
+      if (rsvpSection) rsvpSection.setAttribute('data-stage', next);
+    }
+
+    // a choice was made (or changed): acknowledge it and open the response
+    function revealResponse(){
+      if (!rsvpSection) return;
+      rsvpSection.setAttribute('data-attendance', attendance);
+      rsvpSection.setAttribute('data-tempo', revealedOnce ? 'quick' : 'full');
+      if (stage !== 'details'){ setStage('details'); revealedOnce = true; }
+    }
+
+    // first confirm: reveal "Your place is waiting." — the WhatsApp CTA that
+    // appears with it is the second (and only sending) submit
+    function confirmRsvp(){
+      const active = document.activeElement;
+      if (active && active !== document.body && rsvpForm.contains(active) && active.blur) active.blur();
+      const top = rsvpFlow ? rsvpFlow.getBoundingClientRect().top : 0;
+      setStage('confirmed');
+      const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+      if (vh && (top < vh * 0.14 || top > vh * 0.5)){
+        const behavior = (reduceMotionQuery && reduceMotionQuery.matches) ? 'auto' : 'smooth';
+        try { window.scrollBy({ top: top - vh * 0.22, left: 0, behavior: behavior }); }
+        catch (err) { window.scrollBy(0, top - vh * 0.22); }
+      }
+    }
+
     const RECIPIENTS = {
       bride: { phone: '94761864105', addressName: 'Hashini' },
       groom: { phone: '94760802510', addressName: 'Dilini' }
@@ -2384,6 +2880,7 @@
       btn.addEventListener('click', () => {
         attendance = btn.dataset.attendance;
         selectFrom(attendanceButtons, btn, () => hideValidation());
+        revealResponse();
       });
     });
 
@@ -2463,6 +2960,11 @@
       }
 
       hideValidation();
+
+      // step 1 of 2 — confirm: reveal the confirmation (nothing is sent yet)
+      if (stage !== 'confirmed'){ confirmRsvp(); return; }
+
+      // step 2 of 2 — the existing WhatsApp CTA (unchanged below)
       const { text, phone } = buildMessage(guestName, personalMsg);
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
       window.open(url, '_blank', 'noopener');
