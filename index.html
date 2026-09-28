@@ -1620,7 +1620,8 @@
     transform:none; filter:none; animation:none;
     transition: grid-template-rows 1s var(--ease), opacity .6s ease, visibility 0s linear 1s;
   }
-  #rsvp[data-stage="details"] #rsvpForm > .rsvp-flow{
+  #rsvp[data-stage="details"] #rsvpForm > .rsvp-flow,
+  #rsvp[data-stage="confirmed"] #rsvpForm > .rsvp-flow{
     grid-template-rows:1fr; opacity:1; visibility:visible;
     transition: grid-template-rows 1.2s var(--ease), opacity .5s ease .1s, visibility 0s;
   }
@@ -1681,6 +1682,7 @@
     padding: .5em .1em .85em .34em; margin-top:.2rem; cursor:pointer;
     -webkit-appearance:none; appearance:none;
   }
+  #rsvp[data-stage="confirmed"] .rsvp-continue{ display:none; }
   #rsvp .rsvp-continue .arrow{ display:inline-block; transition: transform .4s ease; }
   #rsvp .rsvp-continue:hover .arrow,
   #rsvp .rsvp-continue:focus-visible .arrow,
@@ -1688,18 +1690,24 @@
 
   /* stage reveal — CSS keyframes started by the stage attribute
      (same Safari-safe approach as the rest of the page) */
-  #rsvp[data-stage="details"] .rsvp-echo          { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-echo) both; }
-  #rsvp[data-stage="details"] .rsvp-ask           { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-ask)  both; }
-  #rsvp[data-stage="details"] .rsvp-step--name    { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-name) both; }
-  #rsvp[data-stage="details"] .rsvp-step--message { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-msg)  both; }
-  #rsvp[data-stage="details"] .rsvp-step--side    { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-side) both; }
-  #rsvp[data-stage="details"] .rsvp-continue      { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-go)   both; }
+  #rsvp[data-stage="details"] .rsvp-echo,
+  #rsvp[data-stage="confirmed"] .rsvp-echo          { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-echo) both; }
+  #rsvp[data-stage="details"] .rsvp-ask,
+  #rsvp[data-stage="confirmed"] .rsvp-ask           { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-ask)  both; }
+  #rsvp[data-stage="details"] .rsvp-step--name,
+  #rsvp[data-stage="confirmed"] .rsvp-step--name    { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-name) both; }
+  #rsvp[data-stage="details"] .rsvp-step--message,
+  #rsvp[data-stage="confirmed"] .rsvp-step--message { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-msg)  both; }
+  #rsvp[data-stage="details"] .rsvp-step--side,
+  #rsvp[data-stage="confirmed"] .rsvp-step--side    { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-side) both; }
+  #rsvp[data-stage="details"] .rsvp-continue,
+  #rsvp[data-stage="confirmed"] .rsvp-continue      { animation: var(--rise-name) var(--rise-dur) var(--ease) var(--t-go)   both; }
 
   /* -- 3 · confirmation: "Your place is waiting." → WhatsApp CTA -- */
   #rsvpForm > .rsvp-confirm{
     display:none; width:100%; flex-direction:column; align-items:center; text-align:center;
     opacity:1; transform:none; filter:none; animation:none;
-    padding-top: clamp(2rem, 5.5vh, 2.8rem);
+    padding-top: clamp(1.2rem, 3.5vh, 1.8rem);
   }
   #rsvp[data-stage="confirmed"] #rsvpForm > .rsvp-confirm{ display:flex; }
   #rsvp .rsvp-thanks{ display:none; flex-direction:column; align-items:center; }
@@ -1863,7 +1871,8 @@
     #rsvp[data-stage="details"] .rsvp-lift,
     #rsvp[data-stage="confirmed"] .rsvp-lift{ transform:none; }
     #rsvpForm > .rsvp-flow,
-    #rsvp[data-stage="details"] #rsvpForm > .rsvp-flow{ transition:none; }
+    #rsvp[data-stage="details"] #rsvpForm > .rsvp-flow,
+    #rsvp[data-stage="confirmed"] #rsvpForm > .rsvp-flow{ transition:none; }
     #rsvp .rsvp-choice, #rsvp .rsvp-side{ transition:none; }
     #rsvp .rsvp-choice::after, #rsvp .rsvp-side::after, .cta-line::after{ transition:none; }
     #rsvp .rsvp-choice[aria-checked="true"]::before{ animation:none; opacity:0; }
@@ -2853,13 +2862,18 @@
     function confirmRsvp(){
       const active = document.activeElement;
       if (active && active !== document.body && rsvpForm.contains(active) && active.blur) active.blur();
-      const top = rsvpFlow ? rsvpFlow.getBoundingClientRect().top : 0;
       setStage('confirmed');
+      // same flow, same place: the confirmation opens right under the fields.
+      // Only nudge the page (never jump) if the WhatsApp CTA would be off-screen.
+      const cta = document.getElementById('rsvpSubmit');
       const vh = window.innerHeight || document.documentElement.clientHeight || 0;
-      if (vh && (top < vh * 0.14 || top > vh * 0.5)){
-        const behavior = (reduceMotionQuery && reduceMotionQuery.matches) ? 'auto' : 'smooth';
-        try { window.scrollBy({ top: top - vh * 0.22, left: 0, behavior: behavior }); }
-        catch (err) { window.scrollBy(0, top - vh * 0.22); }
+      if (cta && vh){
+        const over = cta.getBoundingClientRect().bottom - vh * 0.86;
+        if (over > 0){
+          const behavior = (reduceMotionQuery && reduceMotionQuery.matches) ? 'auto' : 'smooth';
+          try { window.scrollBy({ top: over, left: 0, behavior: behavior }); }
+          catch (err) { window.scrollBy(0, over); }
+        }
       }
     }
 
