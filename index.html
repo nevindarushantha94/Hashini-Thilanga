@@ -1575,55 +1575,87 @@
   /* the form's own spacing is now handled per stage */
   #rsvpForm{ gap:0; }
 
-  /* -- 1 · the two choices: text only, thin champagne line, no boxes -- */
+  /* -- 1 · the two choices: soft pill buttons, clearly tappable --
+        Deliberately different from the squared CALL / WHATSAPP buttons:
+        fully rounded, "Accept" carries a champagne fill, "Decline" is a
+        quiet ivory pill. Equal widths, so they mirror each other about
+        the centre line. -- */
+  #rsvp .rsvp-tap-hint{
+    display:block; margin: -.15em 0 1rem;
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500;
+    font-size: clamp(.98rem,3vw,1.1rem); letter-spacing:.06em; color: var(--ink-soft);
+    max-height:2rem; overflow:hidden;
+    transition: opacity .7s ease, max-height .8s var(--ease), margin .8s var(--ease);
+  }
+  #rsvp[data-attendance] .rsvp-tap-hint{ opacity:0; max-height:0; margin:0; }
+
   #rsvp .rsvp-toggle{
-    display:flex; justify-content:center; align-items:stretch;
-    gap: clamp(1.4rem, 7vw, 2.6rem); width:100%;
+    display:grid; grid-template-columns:1fr 1fr; align-items:stretch;
+    gap: clamp(.7rem,3vw,1rem); width:min(100%, 27rem); margin:0 auto;
   }
-  #rsvp .rsvp-toggle::before{           /* hairline between the two answers */
-    content:""; order:1; align-self:center; width:1px; height:2.3em;
-    background: linear-gradient(to bottom, transparent, var(--gold-line), transparent);
-    opacity:.75;
-  }
-  #rsvp .rsvp-choice:nth-child(1){ order:0; }
-  #rsvp .rsvp-choice:nth-child(2){ order:2; }
+  #rsvp .rsvp-toggle::before{ display:none; }
   #rsvp .rsvp-choice{
-    position:relative; flex:0 1 auto; min-width:0;
-    font-family:'Jost', sans-serif; font-weight:400; text-transform:uppercase;
-    font-size: clamp(.7rem, 2.5vw, .8rem); letter-spacing:.24em; line-height:1.7;
-    color: var(--ink-soft); text-align:center;
-    background:none; border:0; border-radius:0; box-shadow:none;
-    -webkit-appearance:none; appearance:none;
-    padding: .6em .1em 1.3em .34em; cursor:pointer;
-    transition: opacity 1.1s ease, color .6s ease;
+    position:relative; overflow:hidden; min-width:0; min-height:3.6rem;
+    display:flex; align-items:center; justify-content:center;
+    flex:none; order:0; margin:0;
+    font-family:'Jost', sans-serif; font-weight:500; text-transform:uppercase;
+    font-size: clamp(.68rem, 2.5vw, .78rem); letter-spacing:.2em; line-height:1.6;
+    color: var(--ink); text-align:center;
+    padding: .7em 1.7rem .7em calc(1.7rem + .2em);
+    border-radius:999px; -webkit-appearance:none; appearance:none; cursor:pointer;
+    border:1px solid rgba(165,121,59,.75);
+    background: linear-gradient(180deg, rgba(255,252,244,.96), rgba(244,235,214,.92));
+    box-shadow: 0 6px 16px rgba(120,90,40,.14), inset 0 1px 0 rgba(255,255,255,.85);
+    transition: opacity .9s ease, transform .35s var(--ease), background .5s ease,
+                border-color .5s ease, box-shadow .5s ease;
+  }
+  /* "Accept" is the warmer, filled one */
+  #rsvp .rsvp-choice[data-attendance="accept"]{
+    background: linear-gradient(180deg, #F9EDCB, #EAD198);
+    border-color: var(--gold);
+    box-shadow: 0 7px 20px rgba(165,121,59,.26), inset 0 1px 0 rgba(255,255,255,.7);
+  }
+  /* small tick badge, revealed when chosen */
+  #rsvp .rsvp-choice::after{
+    content:""; position:absolute; right:.8rem; top:50%;
+    width:1.15rem; height:1.15rem; border-radius:50%;
+    background: var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.2 8.4l2.6 2.6 5-5.4' fill='none' stroke='%23FFFDF5' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/78% no-repeat;
+    box-shadow: 0 0 10px rgba(240,217,160,.8);
+    opacity:0; transform: translateY(-50%) scale(.4);
+    transition: opacity .4s ease, transform .5s var(--ease);
+  }
+  /* the light that passes across once */
+  #rsvp .rsvp-choice::before{
+    content:""; position:absolute; top:0; bottom:0; left:0; width:45%;
+    background: linear-gradient(100deg, transparent, rgba(255,250,232,.95) 50%, transparent);
+    opacity:0; transform: translateX(-130%) skewX(-18deg); pointer-events:none;
+  }
+  #rsvp.in-view:not([data-attendance]) .rsvp-choice::before{
+    animation: choiceShimmer 1.9s cubic-bezier(.4,0,.2,1) 2.4s 1 both;
+  }
+  #rsvp.in-view:not([data-attendance]) .rsvp-choice[data-attendance="decline"]::before{ animation-delay:2.7s; }
+  #rsvp .rsvp-choice[aria-checked="true"]::before{
+    animation: choiceShimmer 1.5s cubic-bezier(.4,0,.2,1) .05s 1 both;
+  }
+  @keyframes choiceShimmer{
+    0%{ opacity:0; transform: translateX(-130%) skewX(-18deg); }
+    20%{ opacity:1; }
+    100%{ opacity:0; transform: translateX(330%) skewX(-18deg); }
   }
   #rsvp .rsvp-choice[aria-checked="true"]{
-    color: var(--ink); background:none; border:0; box-shadow:none;
+    background: linear-gradient(180deg, #F6E3A9, #E3C378);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(240,217,160,.6), 0 6px 18px rgba(165,121,59,.28), inset 0 1px 0 rgba(255,255,255,.7);
+    color: var(--ink);
   }
-  #rsvp .rsvp-choice:focus-visible{ outline:none; }
-  #rsvp .rsvp-choice::after{            /* the thin champagne line */
-    content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
-    background: var(--gold-line);
-    transform: scaleX(.3); transform-origin:center;
-    transition: transform 1s var(--ease), background-color .6s ease;
-  }
-  #rsvp .rsvp-choice::before{           /* the light that sweeps once when chosen */
-    content:""; position:absolute; left:0; bottom:0; width:42%; height:1px;
-    background: linear-gradient(90deg, transparent, rgba(240,217,160,1) 50%, transparent);
-    box-shadow: 0 0 6px rgba(240,217,160,.7);
-    opacity:0; transform: translateX(-100%); pointer-events:none;
-  }
-  #rsvp .rsvp-choice[aria-checked="true"]::after{ transform:scaleX(1); background: var(--gold); }
-  #rsvp .rsvp-choice[aria-checked="true"]::before{
-    animation: lineSweep 1.7s cubic-bezier(.4,0,.2,1) .05s 1 both;
-  }
-  #rsvp .rsvp-choice:focus-visible::after{ transform:scaleX(.85); background: var(--gold); }
-  /* the answer not chosen gently fades back (still tappable to change) */
-  #rsvp[data-attendance] .rsvp-choice[aria-checked="false"]{ opacity:.36; }
+  #rsvp .rsvp-choice[aria-checked="true"]::after{ opacity:1; transform: translateY(-50%) scale(1); }
+  #rsvp .rsvp-choice:active{ transform: scale(.97); }
+  #rsvp .rsvp-choice:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+  /* the answer not chosen gently steps back (still tappable to change) */
+  #rsvp[data-attendance] .rsvp-choice[aria-checked="false"]{ opacity:.55; transform: scale(.985); box-shadow:none; }
   @media (hover:hover){
-    #rsvp .rsvp-choice:hover::after{ transform:scaleX(.72); }
-    #rsvp .rsvp-choice[aria-checked="true"]:hover::after{ transform:scaleX(1); }
-    #rsvp[data-attendance] .rsvp-choice[aria-checked="false"]:hover{ opacity:.7; }
+    #rsvp .rsvp-choice:hover{ transform: translateY(-2px); box-shadow: 0 10px 22px rgba(165,121,59,.26), inset 0 1px 0 rgba(255,255,255,.85); }
+    #rsvp[data-attendance] .rsvp-choice[aria-checked="false"]:hover{ opacity:.85; }
   }
   @media (min-width:480px){
     #rsvp .rsvp-choice br{ display:none; }   /* one line per answer on wider screens */
@@ -1904,7 +1936,8 @@
     #rsvp[data-stage="confirmed"] #rsvpForm > .rsvp-flow{ transition:none; }
     #rsvp .rsvp-choice, #rsvp .rsvp-side{ transition:none; }
     #rsvp .rsvp-choice::after, #rsvp .rsvp-side::after, .cta-line::after{ transition:none; }
-    #rsvp .rsvp-choice[aria-checked="true"]::before{ animation:none; opacity:0; }
+    #rsvp .rsvp-choice::before{ animation:none !important; opacity:0 !important; }
+    #rsvp .rsvp-choice, #rsvp .rsvp-choice::after{ transition-duration:.01s !important; }
     #rsvp[data-stage="confirmed"] .rsvp-thanks-line{ animation: revealFade .5s ease var(--t-line) both; }
     #rsvp[data-stage="confirmed"] .rsvp-submit::before,
     #rsvp[data-stage="confirmed"] .rsvp-submit:hover::before,
@@ -2637,6 +2670,7 @@
           <div class="rsvp-field rsvp-choose">
             <div class="rsvp-lift">
               <span class="rsvp-label">Will You Be Joining Us?</span>
+              <span class="rsvp-tap-hint" aria-hidden="true">Tap to reply</span>
               <div class="rsvp-toggle" role="radiogroup" aria-label="Attendance">
                 <button type="button" class="rsvp-choice" data-attendance="accept" role="radio" aria-checked="false">Joyfully <br>Accept</button>
                 <button type="button" class="rsvp-choice" data-attendance="decline" role="radio" aria-checked="false">Regretfully <br>Decline</button>
