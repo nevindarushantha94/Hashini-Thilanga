@@ -3,25 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Hashini & Thilanga — 26 · 11 · 2026</title>
+<title>Hashini & Thilanga — Wedding Invitation · 26 · 11 · 2026</title>
 
 <!-- ================= SOCIAL / LINK PREVIEW =================
      Used by WhatsApp, Messenger, Facebook, LinkedIn and other
      platforms when this invitation URL is shared. Keep the image
      file in the same folder as this index.html.
      ============================================================ -->
-<meta name="description" content="Our Story Is Waiting for You — Hashini & Thilanga · 26 November 2026 · Hotel Grand Palace, Hikkaduwa">
+<meta name="description" content="You are warmly invited to the wedding of Hashini & Thilanga · 26 November 2026 · Hotel Grand Palace, Hikkaduwa">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Hashini & Thilanga">
-<meta property="og:description" content="Our Story Is Waiting for You · 26 November 2026 · Hotel Grand Palace, Hikkaduwa">
+<meta property="og:title" content="Hashini & Thilanga — Wedding Invitation">
+<meta property="og:site_name" content="Hashini & Thilanga">
+<meta property="og:description" content="You are warmly invited · 26 November 2026 · Hotel Grand Palace, Hikkaduwa">
 <meta property="og:image" content="hashini-thilanga-share-preview.jpg">
 <meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="1734">
+<meta property="og:image:height" content="907">
+<meta property="og:image:alt" content="Hashini & Thilanga — Save the Date, 26 November 2026">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Hashini & Thilanga">
-<meta name="twitter:description" content="Our Story Is Waiting for You · 26 November 2026 · Hotel Grand Palace, Hikkaduwa">
+<meta name="twitter:title" content="Hashini & Thilanga — Wedding Invitation">
+<meta name="twitter:description" content="You are warmly invited · 26 November 2026 · Hotel Grand Palace, Hikkaduwa">
 <meta name="twitter:image" content="hashini-thilanga-share-preview.jpg">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap');
@@ -2036,8 +2038,30 @@
   .audio-toggle.muted .icon-on{ display:none; }
   .audio-toggle.muted .icon-off{ display:block; }
 
+  /* small state label beside the speaker button: shows "MUSIC ON" shortly
+     after the soundtrack starts, then again on each mute / unmute */
+  .audio-hint{
+    position: fixed; z-index:199;
+    top: calc(1rem + var(--safe-t) + 21px);
+    right: calc(1rem + env(safe-area-inset-right, 0px) + 42px + .55rem);
+    transform: translateY(-50%) translateX(6px);
+    padding: .42rem .8rem .42rem calc(.8rem + .26em);
+    border-radius: 999px;
+    background: rgba(246,241,231,0.72);
+    border: 1px solid var(--gold-line);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(36,28,19,0.10);
+    font-family:'Jost', sans-serif; font-weight:400; font-size:.56rem;
+    letter-spacing:.26em; color: var(--gold); white-space:nowrap;
+    opacity:0; pointer-events:none;
+    transition: opacity .6s ease, transform .6s cubic-bezier(.19,1,.22,1);
+  }
+  .audio-hint.show{ opacity:1; transform: translateY(-50%) translateX(0); }
+
   @media (prefers-reduced-motion: reduce){
     .audio-toggle{ transition-duration:0.4s !important; }
+    .audio-hint{ transition-duration:.3s; transform: translateY(-50%); }
+    .audio-hint.show{ transform: translateY(-50%); }
   }
 
   /* ============================================================
@@ -2222,6 +2246,17 @@
     0%,100%{ opacity:.7; transform: translateX(-50%) translateY(0) scale(1); }
     50%{ opacity:.42; transform: translateX(-50%) translateY(3px) scale(.97); }
   }
+  /* keep a clear, guaranteed gap between each section's last content and
+     its SCROLL TO EXPLORE cue, whatever the phone's screen height */
+  .post-hero-content .families,
+  .post-hero-content .before-idoc,
+  .post-hero-content .wedding-details,
+  .post-hero-content .location,
+  .post-hero-content .rsvp{
+    padding-bottom: calc(6.6rem + var(--safe-b));
+  }
+  /* the RSVP opens closer to the Location cue above it */
+  .post-hero-content .rsvp{ padding-top: clamp(1rem,3vh,1.6rem); }
   /* dismissed the moment the guest scrolls on; reappears naturally if they
      scroll back, via the same .in-view state and this same rule */
   .scroll-cue.cue-dismissed{ opacity:0 !important; transition: opacity .5s ease; }
@@ -2329,6 +2364,7 @@
     <path d="M16.3 9.3l4.4 5.4M20.7 9.3l-4.4 5.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
   </svg>
 </button>
+<div class="audio-hint" id="audioHint" aria-hidden="true">MUSIC ON</div>
 
 <main>
   <!-- ============================================================
@@ -2422,17 +2458,6 @@
           </p>
         </div>
       </article>
-    </div>
-
-    <div class="families-mid-divider" id="familiesMidDivider" aria-hidden="true">
-      <span class="mid-divider-letter">H</span>
-      <span class="line"></span>
-      <span class="gold-point">
-        <svg viewBox="0 0 20 20"><use href="#sparkShape" class="spark" /></svg>
-        <span class="glow"></span>
-      </span>
-      <span class="line right"></span>
-      <span class="mid-divider-letter">T</span>
     </div>
         </div>
         <div class="scroll-cue" aria-hidden="true"><div class="cue-body"><span class="scroll-cue-label">SCROLL TO EXPLORE</span><span class="cue-arrow"></span></div></div>
@@ -2579,7 +2604,7 @@
         </div>
 
         <div class="location-actions" id="locationActions">
-          <a class="location-cta cta-line" href="https://share.google/igSaItVGxoklcSI4m" target="_blank" rel="noopener">
+          <a class="location-cta cta-line" href="https://www.google.com/maps/dir/?api=1&destination=Hotel+Grand+Palace+Hikkaduwa&travelmode=driving" target="_blank" rel="noopener">
             GET DIRECTIONS <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
@@ -2811,13 +2836,44 @@
     }
     requestAnimationFrame(step);
     audioToggle.classList.add('visible');
+    setTimeout(() => showAudioHint(4200), 1400);
   }
+
+  // ---- Music state label (fades away by itself) ----
+  const audioHint = document.getElementById('audioHint');
+  let audioHintTimer = null;
+  function showAudioHint(ms){
+    if (!audioHint) return;
+    audioHint.textContent = bgAudio.muted ? 'MUSIC OFF' : 'MUSIC ON';
+    audioHint.classList.add('show');
+    clearTimeout(audioHintTimer);
+    audioHintTimer = setTimeout(() => audioHint.classList.remove('show'), ms);
+  }
+
+  // ---- Keep the phone screen awake while the invitation is open ----
+  // Uses the Screen Wake Lock API where the browser supports it; anywhere
+  // else this quietly does nothing. The lock is released by the browser when
+  // the tab is hidden, so it is asked for again when the guest comes back.
+  let wakeLock = null;
+  let wakeWanted = false;
+  async function requestWakeLock(){
+    try {
+      if (!wakeWanted || !('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+      if (wakeLock) return;
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch (e) { wakeLock = null; }
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') requestWakeLock();
+  });
 
   audioToggle.addEventListener('click', () => {
     bgAudio.muted = !bgAudio.muted;
     audioToggle.classList.toggle('muted', bgAudio.muted);
     audioToggle.setAttribute('aria-pressed', String(bgAudio.muted));
     try { sessionStorage.setItem('weddingSoundMuted', String(bgAudio.muted)); } catch (e) {}
+    showAudioHint(2200);
   });
 
   let hasBegun = false;
@@ -2899,6 +2955,7 @@
     // required by iOS/Safari autoplay rules, and it's the ONLY place
     // in the whole script that ever calls bgAudio.play().
     startSoundtrack();
+    wakeWanted = true; requestWakeLock();
 
     // 0.0s — tiny warm light response
     stage.classList.add('lit');
