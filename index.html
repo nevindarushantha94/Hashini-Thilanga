@@ -2176,9 +2176,15 @@
     position:absolute; left:50%; z-index:2;
     bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
     transform: translateX(-50%);
-    width:14px; height:20px; opacity:0; pointer-events:none;
+    display:flex; flex-direction:column; align-items:center; gap:.4rem;
+    width:max-content; opacity:0; pointer-events:none;
   }
-  .scroll-cue svg{ width:100%; height:100%; display:block; overflow:visible; }
+  .scroll-cue-label{
+    font-family:'Jost', sans-serif; font-weight:400; font-size:.52rem;
+    letter-spacing:.24em; color: var(--gold); white-space:nowrap;
+    text-shadow: 0 1px 5px rgba(255,251,238,0.7);
+  }
+  .scroll-cue svg{ width:14px; height:20px; display:block; overflow:visible; }
   .scroll-cue path{
     fill:none; stroke: var(--gold); stroke-width:1.1;
     stroke-linecap:round; stroke-linejoin:round;
@@ -2186,23 +2192,27 @@
   .families .scroll-cue,
   .before-idoc .scroll-cue{ bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px)); }
 
+  /* appear once when the section reveals, then breathe gently and
+     continuously — the arrow stays until the guest actually scrolls on */
   .families.in-view .scroll-cue,
   .before-idoc.in-view .scroll-cue,
   .wedding-details.in-view .scroll-cue,
   .location.in-view .scroll-cue,
   .rsvp.in-view .scroll-cue{
-    animation: cueLife 8s cubic-bezier(.19,1,.22,1) 1.1s 1 both;
+    animation:
+      cueAppear .9s cubic-bezier(.19,1,.22,1) 1.1s both,
+      cueBreathe 4.2s ease-in-out 2s infinite;
   }
-  @keyframes cueLife{
+  @keyframes cueAppear{
     0%{ opacity:0; transform: translateX(-50%) translateY(-3px) scale(.92); }
-    12%{ opacity:.68; transform: translateX(-50%) translateY(0) scale(1); }
-    32%{ opacity:.42; transform: translateX(-50%) translateY(3px) scale(.97); }
-    50%{ opacity:.72; transform: translateX(-50%) translateY(0) scale(1); }
-    72%{ opacity:.42; transform: translateX(-50%) translateY(3px) scale(.97); }
-    100%{ opacity:0; transform: translateX(-50%) translateY(0) scale(1); }
+    100%{ opacity:.7; transform: translateX(-50%) translateY(0) scale(1); }
   }
-  /* dismissed the moment the guest scrolls on; may ease back in if they
-     scroll straight back while the cue's natural cycle is still running */
+  @keyframes cueBreathe{
+    0%,100%{ opacity:.7; transform: translateX(-50%) translateY(0) scale(1); }
+    50%{ opacity:.42; transform: translateX(-50%) translateY(3px) scale(.97); }
+  }
+  /* dismissed the moment the guest scrolls on; reappears naturally if they
+     scroll back, via the same .in-view state and this same rule */
   .scroll-cue.cue-dismissed{ opacity:0 !important; transition: opacity .5s ease; }
 
   @media (prefers-reduced-motion: reduce){
@@ -2414,7 +2424,7 @@
       <span class="mid-divider-letter">T</span>
     </div>
         </div>
-        <div class="scroll-cue" aria-hidden="true"><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
+        <div class="scroll-cue" aria-hidden="true"><span class="scroll-cue-label">SCROLL TO EXPLORE</span><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
       </section>
 
       <!-- ============================================================
@@ -2452,7 +2462,7 @@
           </span>
           <span class="line right"></span>
         </div>
-        <div class="scroll-cue" aria-hidden="true"><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
+        <div class="scroll-cue" aria-hidden="true"><span class="scroll-cue-label">SCROLL TO EXPLORE</span><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
       </section>
 
       <!-- ============================================================
@@ -2526,7 +2536,7 @@
             SAVE THE DATE
           </button>
         </div>
-        <div class="scroll-cue" aria-hidden="true"><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
+        <div class="scroll-cue" aria-hidden="true"><span class="scroll-cue-label">SCROLL TO EXPLORE</span><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
       </section>
 
       <!-- ============================================================
@@ -2562,7 +2572,7 @@
             GET DIRECTIONS <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
-        <div class="scroll-cue" aria-hidden="true"><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
+        <div class="scroll-cue" aria-hidden="true"><span class="scroll-cue-label">SCROLL TO EXPLORE</span><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
       </section>
 
       <!-- ============================================================
@@ -2688,7 +2698,7 @@
             </div>
           </div>
         </div>
-        <div class="scroll-cue" aria-hidden="true"><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
+        <div class="scroll-cue" aria-hidden="true"><span class="scroll-cue-label">SCROLL TO EXPLORE</span><svg viewBox="0 0 14 20"><path d="M7 1 L7 14"/><path d="M2 9.5 L7 15 L12 9.5"/></svg></div>
       </section>
 
       <!-- ============================================================
@@ -3072,9 +3082,16 @@
   }
   function updateScrollCues(){
     if (!cueBases.size) return;
-    const y = window.pageYOffset || document.documentElement.scrollTop || 0;
-    cueBases.forEach((baseY, cue) => {
-      cue.classList.toggle('cue-dismissed', Math.abs(y - baseY) > 28);
+    const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+    cueBases.forEach((_unused, cue) => {
+      // "the guest has scrolled away from this section" — checked against the
+      // section's own current position, not a fixed scrollY snapshot, so a
+      // cue armed while its section was only partly in view is never
+      // dismissed prematurely once the guest actually settles on it.
+      const section = cue.parentElement;
+      const r = section ? section.getBoundingClientRect() : null;
+      const stillHere = r ? (r.bottom > vh * 0.15 && r.top < vh * 0.85) : true;
+      cue.classList.toggle('cue-dismissed', !stillHere);
     });
   }
   window.addEventListener('scroll', () => {
