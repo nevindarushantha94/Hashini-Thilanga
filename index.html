@@ -182,6 +182,29 @@
 
   .invitation.touch-hidden .touch{ opacity:0; transform: translateX(-50%) translateY(6px); }
 
+  /* soft glowing ring that slowly pulses around TOUCH TO BEGIN */
+  .touch::before, .touch::after{
+    content:""; position:absolute; pointer-events:none; border-radius:999px;
+    left:-1.9rem; right:-1.9rem; top:-.95rem; bottom:-.6rem;
+  }
+  .touch::before{
+    border:1px solid rgba(165,121,59,.55);
+    box-shadow: 0 0 16px rgba(240,217,160,.6), inset 0 0 14px rgba(240,217,160,.3);
+    animation: touchRing 3.2s ease-in-out infinite;
+  }
+  .touch::after{
+    border:1px solid rgba(200,165,100,.5);
+    animation: touchRipple 3.2s ease-out infinite;
+  }
+  @keyframes touchRing{
+    0%,100%{ opacity:.4; transform: scale(.975); }
+    50%{ opacity:1; transform: scale(1.03); }
+  }
+  @keyframes touchRipple{
+    0%{ opacity:.55; transform: scale(1); }
+    70%,100%{ opacity:0; transform: scale(1.32, 1.7); }
+  }
+
   /* Opening screen: the background image already renders "SAVE THE DATE",
      "HASHINI & THILANGA" and "26 NOVEMBER 2026", so the matching HTML type
      is kept in the layout (to preserve the exact vertical rhythm the rest
@@ -231,6 +254,8 @@
 
   @media (prefers-reduced-motion: reduce){
     .name-line,.touch-text,.touch-dot,.subtitle,.bg-image,.light-thread{ animation:none !important; }
+    .touch::before{ animation:none !important; opacity:.8; }
+    .touch::after{ display:none; }
     .composition,.light-bridge,.video-layer,.touch,.bg-wrap,.bg-glow{ transition-duration:0.5s !important; }
   }
 
@@ -330,6 +355,39 @@
      against .hero-media (same box as the video) so it tracks the heart
      regardless of hero-content's own bottom-anchored layout. Reveals
      before the names (0.45s vs 1.15s delay). */
+  /* breathing warm glow in the open belly of the heart, behind the H · T */
+  .hero-heart-glow{
+    position:absolute; left:50%; top:42%; z-index:0;
+    width:clamp(150px,44vw,240px); height:clamp(110px,32vw,180px);
+    transform:translate(-50%,-50%);
+    background: radial-gradient(ellipse at center, rgba(255,241,205,.62) 0%, rgba(245,222,170,.28) 42%, rgba(245,222,170,0) 70%);
+    opacity:0; pointer-events:none; filter: blur(2px);
+  }
+  .hero.in-view .hero-heart-glow{ animation: heartGlowBreathe 4.4s ease-in-out .5s infinite; }
+  @keyframes heartGlowBreathe{
+    0%,100%{ opacity:.25; transform:translate(-50%,-50%) scale(.92); }
+    50%{ opacity:.85; transform:translate(-50%,-50%) scale(1.08); }
+  }
+
+  /* a few fine specks of gold light drifting slowly upward */
+  .hero-dust{ position:absolute; inset:0; overflow:hidden; pointer-events:none; opacity:0; transition: opacity 2.4s ease 1.2s; }
+  .hero.in-view .hero-dust{ opacity:1; }
+  .hero-dust.paused span{ animation-play-state:paused; }
+  .hero-dust span{
+    position:absolute; bottom:-12px; left:var(--l);
+    width:var(--s); height:var(--s); border-radius:50%;
+    background: radial-gradient(circle, #FFF6D8 0%, rgba(236,201,128,.95) 42%, rgba(236,201,128,0) 72%);
+    filter: blur(var(--b));
+    opacity:0; will-change: transform, opacity;
+    animation: dustRise var(--d) linear var(--dl) infinite;
+  }
+  @keyframes dustRise{
+    0%{ transform: translate3d(0,0,0); opacity:0; }
+    12%{ opacity:var(--o); }
+    80%{ opacity:var(--o); }
+    100%{ transform: translate3d(var(--x),-92vh,0); opacity:0; }
+  }
+
   .hero-heart-monogram{
     position:absolute; left:50%; top:42%; z-index:1;
     font-family:'Cormorant Garamond', serif; font-weight:500; font-style:normal;
@@ -438,6 +496,8 @@
     /* not a .hero-content child, so it needs its own reduced-motion
        reset: keep the heart-centering translate, drop the motion/blur,
        just fade in at the same stage the monogram used to. */
+    .hero-dust{ display:none; }
+    .hero.in-view .hero-heart-glow{ animation:none; opacity:.45; }
     .hero-heart-monogram{
       opacity:0; transform:translate(-50%,-50%); filter:none;
     }
@@ -2108,7 +2168,23 @@
 
   /* -- countdown: soft blur-to-sharp on every change -- */
   .countdown-number{ transition:none; }
-  .countdown-number.tick{ animation: cdTick .9s cubic-bezier(.19,1,.22,1) both; }
+  .countdown-number{ position:relative; }
+  .countdown-number.tick{ animation: cdSlideIn .8s cubic-bezier(.19,1,.22,1) both; }
+  /* the previous digits glide up and away while the new ones rise in */
+  .countdown-number.tick::before{
+    content: attr(data-prev);
+    position:absolute; left:0; right:0; top:0; text-align:center;
+    pointer-events:none; animation: cdSlideOut .6s cubic-bezier(.4,0,.2,1) both;
+  }
+  @keyframes cdSlideIn{
+    0%{ opacity:0; transform: translateY(46%); filter:blur(1.5px); text-shadow:0 0 18px rgba(240,217,160,1); }
+    55%{ text-shadow:0 0 16px rgba(240,217,160,.85); }
+    100%{ opacity:1; transform: translateY(0); filter:blur(0); text-shadow:0 0 0 rgba(240,217,160,0); }
+  }
+  @keyframes cdSlideOut{
+    0%{ opacity:1; transform: translateY(0); }
+    100%{ opacity:0; transform: translateY(-46%); }
+  }
   @keyframes cdTick{
     from{ opacity:.35; filter:blur(2px); }
     to  { opacity:1;   filter:blur(0); }
@@ -2143,6 +2219,29 @@
     outline:none;
     box-shadow: inset 0 0 0 3px rgba(255,251,240,.8), inset 0 0 0 4px rgba(200,169,106,.7),
                 0 14px 30px -18px rgba(120,90,40,.55);
+  }
+
+  /* add-to-calendar: label swaps to a confirmation and the tick draws in */
+  #weddingDetails .save-date-btn .sd-labels{ display:inline-grid; text-align:center; }
+  #weddingDetails .save-date-btn .sd-labels > span{
+    grid-area:1/1; white-space:nowrap;
+    transition: opacity .5s ease, transform .5s cubic-bezier(.19,1,.22,1);
+  }
+  #weddingDetails .save-date-btn .sd-l2{ opacity:0; transform: translateY(6px); }
+  #weddingDetails .save-date-btn .sd-day{ transition: opacity .3s ease; }
+  #weddingDetails .save-date-btn .sd-tick{
+    stroke-dasharray:1; stroke-dashoffset:1; opacity:0;
+    transition: stroke-dashoffset .6s ease .15s, opacity .2s ease;
+  }
+  #weddingDetails .save-date-btn.added .sd-l1{ opacity:0; transform: translateY(-6px); }
+  #weddingDetails .save-date-btn.added .sd-l2{ opacity:1; transform: translateY(0); }
+  #weddingDetails .save-date-btn.added .sd-day{ opacity:0; }
+  #weddingDetails .save-date-btn.added .sd-tick{ stroke-dashoffset:0; opacity:1; }
+  #weddingDetails .save-date-btn.added{
+    border-color: var(--gold);
+    background: linear-gradient(180deg, rgba(250,238,201,.92) 0%, rgba(238,214,150,.75) 100%);
+    box-shadow: inset 0 0 0 3px rgba(255,251,240,.8), inset 0 0 0 4px rgba(200,169,106,.6),
+                0 0 22px rgba(240,217,160,.6), 0 14px 30px -18px rgba(120,90,40,.5);
   }
 
   /* call / whatsapp: the same card, one size down */
@@ -2306,6 +2405,7 @@
 
   @media (prefers-reduced-motion: reduce){
     .countdown-number.tick{ animation: revealFade .4s ease both; }
+    .countdown-number.tick::before{ display:none; }
     .gold-divider .line{ transform:none; }
     .gold-divider .gold-point{ opacity:1; }
     .gold-divider.in-view .line,
@@ -2413,6 +2513,8 @@
       </video>
       <div class="hero-overlay" aria-hidden="true"></div>
       <div class="hero-grain" aria-hidden="true"></div>
+      <div class="hero-dust" id="heroDust" aria-hidden="true"></div>
+      <div class="hero-heart-glow" aria-hidden="true"></div>
       <div class="hero-heart-monogram">H &middot; T</div>
     </div>
 
@@ -2595,14 +2697,15 @@
         <p class="countdown-arrived" id="countdownArrived" hidden>Today is the day</p>
 
         <div class="details-actions" id="detailsActions">
-          <button type="button" class="save-date-btn" id="saveDateBtn">
+          <button type="button" class="save-date-btn" id="saveDateBtn" aria-live="polite">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect x="3.5" y="5" width="17" height="15" rx="1.2" stroke="currentColor" stroke-width="1.2"/>
               <path d="M3.5 9.5h17" stroke="currentColor" stroke-width="1.2"/>
               <path d="M8 3v3.4M16 3v3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-              <path d="M8.4 13.2l1.9 1.9 3.8-3.9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <text class="sd-day" x="12" y="17.6" text-anchor="middle" font-family="Playfair Display, Georgia, serif" font-size="6.4" font-weight="600" fill="currentColor">26</text>
+              <path class="sd-tick" d="M8.2 14.2l2.6 2.6 5-5.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/>
             </svg>
-            SAVE THE DATE
+            <span class="sd-labels"><span class="sd-l1">ADD TO CALENDAR</span><span class="sd-l2">REMINDERS SET</span></span>
           </button>
         </div>
         <div class="scroll-cue" aria-hidden="true"><div class="cue-body"><span class="scroll-cue-label">SCROLL TO EXPLORE</span><span class="cue-arrow"></span></div></div>
@@ -2949,6 +3052,32 @@
   // reveal the Hero the moment the opening film finishes playing
   video.addEventListener('ended', handOffToHero);
 
+  // ---- Hero gold dust: a handful of fine specks, paused when off-screen ----
+  (function(){
+    const dust = document.getElementById('heroDust');
+    if (!dust) return;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    const count = 16;
+    for (let i = 0; i < count; i++){
+      const sp = document.createElement('span');
+      const size = 2 + Math.random() * 3.4;
+      sp.style.setProperty('--l', (4 + Math.random() * 92).toFixed(1) + '%');
+      sp.style.setProperty('--s', size.toFixed(1) + 'px');
+      sp.style.setProperty('--b', (size > 4 ? 1.2 : 0.2).toFixed(1) + 'px');
+      sp.style.setProperty('--o', (0.5 + Math.random() * 0.45).toFixed(2));
+      sp.style.setProperty('--x', ((Math.random() - 0.5) * 60).toFixed(0) + 'px');
+      sp.style.setProperty('--d', (13 + Math.random() * 12).toFixed(1) + 's');
+      sp.style.setProperty('--dl', (-Math.random() * 20).toFixed(1) + 's');
+      dust.appendChild(sp);
+    }
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver((entries) => {
+        dust.classList.toggle('paused', !entries[0].isIntersecting);
+      }, { threshold: 0 }).observe(hero);
+    }
+  })();
+
   // gentle scroll cue fade once the guest starts exploring
   window.addEventListener('scroll', () => {
     if (window.scrollY > 24) hero.classList.add('scrolled');
@@ -2990,6 +3119,8 @@
     // in the whole script that ever calls bgAudio.play().
     startSoundtrack();
     wakeWanted = true; requestWakeLock();
+    // tiny haptic tap (Android browsers only; silently ignored elsewhere)
+    try { if (navigator.vibrate) navigator.vibrate(18); } catch (e) {}
 
     // 0.0s — tiny warm light response
     stage.classList.add('lit');
@@ -3112,8 +3243,9 @@
 
   function cdSetNumber(el, next, soft){
     if (!el || el.textContent === next) return;
+    el.setAttribute('data-prev', el.textContent);
     el.textContent = next;
-    if (soft){ // soft blur-to-sharp, restarted by class toggle
+    if (soft){ // slide + gold glow, restarted by class toggle
       el.classList.remove('tick');
       void el.offsetWidth;
       el.classList.add('tick');
@@ -3229,6 +3361,11 @@
         'DESCRIPTION:Hashini & Thilanga Wedding Reminder',
         'TRIGGER:-P1D',
         'END:VALARM',
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Today is the day - Hashini & Thilanga\'s Wedding',
+        'TRIGGER:-PT3H',
+        'END:VALARM',
         'END:VEVENT',
         'END:VCALENDAR'
       ].join('\r\n');
@@ -3242,6 +3379,11 @@
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      // the button confirms it, like a booking
+      saveDateBtn.classList.add('added');
+      clearTimeout(saveDateBtn._addedTimer);
+      saveDateBtn._addedTimer = setTimeout(() => saveDateBtn.classList.remove('added'), 4200);
     });
   }
 
